@@ -1,0 +1,16 @@
+import { Router } from 'express';
+import { AuthController } from '../controllers/auth.controller';
+import { verifyAccountLimiter,resetPasswordLimiter } from '../helpers/rate.limiter.helper';
+import { authentication } from '../middleware/authentication';
+import { authorization } from '../middleware/authorization';
+import { UserRoles } from '../enum/user.roles';
+
+const authRouter = Router();
+
+authRouter.post('/login', AuthController.loginUser);
+authRouter.post('/create',authentication,authorization([UserRoles.ADMIN]),AuthController.createUser);
+authRouter.post('/refresh-token', AuthController.refreshToken);
+// authRouter.post('/verify-account',  verifyAccountLimiter, AuthController.verifyAccount);
+// authRouter.post('/reset-password', resetPasswordLimiter, AuthController.resetPassword);
+
+export { authRouter };

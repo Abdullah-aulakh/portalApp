@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import  express from "express";
 import { AppDataSource } from "./config/data-source";
+import { userRouter} from "./routes/user.routes";
+import { authRouter } from "./routes/auth.routes";
 
 
 const app = express();
@@ -8,6 +10,8 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
+app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
 
 
 AppDataSource.initialize()

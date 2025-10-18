@@ -6,12 +6,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
 import { UserRoles } from '../enum/user.roles';
 import { Student } from './student.entity';
 import { Teacher } from './teacher.entity';
 import { Admin } from './admin.entity';
 import Encrypt from '../helpers/encrypt.helper';
+import { Token } from './token.entity';
 
 @Entity('users')
 export class User {
@@ -66,6 +68,9 @@ export class User {
     onDelete: 'CASCADE',
   })
   admin: Admin;
+
+  @OneToMany(() => Token, (token) => token.user)
+  token: Token[];
 
   @BeforeInsert()
   async hashPassword() {

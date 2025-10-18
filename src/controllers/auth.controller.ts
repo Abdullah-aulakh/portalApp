@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { userRepository} from "../repository/index";
+import { tokenRepository, userRepository} from "../repository/index";
 import Encrypt from "../helpers/encrypt.helper";
 import { UserResponseDto } from "../dto/response/user.response.dto";
 import { catchAsync } from "../helpers/catch-async.helper";
 import { UserRoles } from "../enum/user.roles";
-import { departmentRepository } from "../repository/index";
+import { departmentRepository,otpRepository } from "../repository/index";
 import { User } from "../entity/user.entity";
 
 export class AuthController {
@@ -42,24 +42,24 @@ export class AuthController {
   });
 
  
-  // static resetPassword = catchAsync(async (req: Request, res: Response) => {
-  //   const { email, password, otp } = req.body;
-  //   const user = await userRepository.findByEmail(email);
-  //   if (!user) return res.status(404).json({ message: "User not found" });
+  static resetPassword = catchAsync(async (req: Request, res: Response) => {
+   const {token,password} = req.body;
+    const payload = await Encrypt.verifyToken(token);
+    const dbToken = await tokenRepository.findOne(token);
+    if (!dbToken) return res.status(401).json({ message: "unauthorized" });
+    if (!payload) return res.status(401).json({ message: "unauthorized" });
+    const user = await userRepository.findByEmail(payload.email);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-  //   const otpRecord = await otpRepository.findOne(otp, email);
-  //   if (!otpRecord) return res.status(404).json({ message: "Invalid OTP" });
-  //   if (otpRecord.verified || otpRecord.expiresAt < new Date())
-  //     return res.status(400).json({ message: "Invalid OTP" });
-
-  //   user.password = await Encrypt.hashPassword(password);
-  //   await userRepository.updateUser(user.id, user);
-
-  //   otpRecord.verified = true;
-  //   await otpRepository.update(otpRecord.id, otpRecord);
-
-  //   res.status(200).json({ message: "Password reset successfully" });
-  // });
+    const otpRecord = await otpRepository.findOne(payload.otp, payload.email);
+    if (!otpRecord) return res.status(404).json({ message: "Invalid OTP" });
+    if(!otpRecord.verified)
+      return res.status(400).json({ message: "Invalid OTP" });
+    user.password = await Encrypt.hashPassword(password);
+    await userRepository.updateUser(user.id, user);
+    await tokenRepository.delete(token);
+    res.status(200).json({ message: "Password reset successfully" });
+  });
 
   static createUser = catchAsync(async (req: Request, res: Response) => {
     const existingUser = await userRepository.findByEmail(req.body.email);

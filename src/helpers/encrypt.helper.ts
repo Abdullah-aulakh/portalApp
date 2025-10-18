@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { Secret, SignOptions } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
@@ -17,12 +17,25 @@ export default class Encrypt {
     return bcrypt.compareSync(password, hashedPassword);
   }
 
-  static async generateToken(payload: any): Promise<string> {
-    return await jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
+  static async generateToken(
+    payload: object,
+    expiryTime: string = "1h"
+  ): Promise<string> {
+    if (!JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined");
+    }
+
+    const secret: Secret = JWT_SECRET as Secret;
+
+    const options: SignOptions = {
+      expiresIn: expiryTime as any,
+    };
+
+    return jwt.sign(payload, secret, options);
   }
 
   static async generateRefreshToken(payload: any): Promise<string> {
-    return await jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
   }
 
   static verifyToken(token: string): any {

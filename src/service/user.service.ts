@@ -34,4 +34,12 @@ export class UserService {
             }
         );
     }
+     async updateUser(id: string, userData: Partial<User>): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) return null;
+
+    this.userRepository.merge(user, userData);
+    await this.userRepository.save(user);
+    return user;
+  }
 }

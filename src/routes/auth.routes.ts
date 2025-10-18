@@ -4,11 +4,12 @@ import { verifyAccountLimiter,resetPasswordLimiter } from '../helpers/rate.limit
 import { authentication } from '../middleware/authentication';
 import { authorization } from '../middleware/authorization';
 import { UserRoles } from '../enum/user.roles';
+import { userValidator } from '../validators';
 
 const authRouter = Router();
 
 authRouter.post('/login', AuthController.loginUser);
-authRouter.post('/create',authentication,authorization([UserRoles.ADMIN]),AuthController.createUser);
+authRouter.post('/create',authentication,authorization([UserRoles.ADMIN]),userValidator,AuthController.createUser);
 authRouter.post('/refresh-token', AuthController.refreshToken);
 // authRouter.post('/verify-account',  verifyAccountLimiter, AuthController.verifyAccount);
 // authRouter.post('/reset-password', resetPasswordLimiter, AuthController.resetPassword);

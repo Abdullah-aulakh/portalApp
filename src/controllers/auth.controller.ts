@@ -3,6 +3,9 @@ import { userRepository} from "../repository/index";
 import Encrypt from "../helpers/encrypt.helper";
 import { UserResponseDto } from "../dto/response/user.response.dto";
 import { catchAsync } from "../helpers/catch-async.helper";
+import { UserRoles } from "../enum/user.roles";
+import { departmentRepository } from "../repository/index";
+import { User } from "../entity/user.entity";
 
 export class AuthController {
   
@@ -61,7 +64,28 @@ export class AuthController {
   static createUser = catchAsync(async (req: Request, res: Response) => {
     const existingUser = await userRepository.findByEmail(req.body.email);
     if (existingUser) return res.status(400).json({ message: "User already exists" });
-    const user = await userRepository.createUser(req.body);
+    let userData = new User();
+      userData= {...req.body};
+
+    if(req.body?.role === UserRoles.TEACHER || req.body?.role === UserRoles.STUDENT){
+      const department = await departmentRepository.findById(req.body.departmentId);
+      if (!department) return res.status(404).json({ message: "Department not found" });
+     if(userData.role === UserRoles.TEACHER){
+      userData.teacher = {
+        ...userData.teacher,
+        department: department,
+      };
+     }
+     else{
+      userData.student = {
+        ...userData.student,
+        department: department,
+      };
+     }
+    }
+    
+    const user = await userRepository.createUser(userData);
     res.status(201).json(new UserResponseDto(user));
+    
   });
 }

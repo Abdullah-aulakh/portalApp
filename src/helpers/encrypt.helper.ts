@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 dotenv.config();
-const { JWT_SECRET = "", SALT_ROUNDS } = process.env;
+const { JWT_SECRET = "", SALT_ROUNDS=10 } = process.env;
 
 export default class Encrypt {
   static async hashPassword(password: string): Promise<string> {

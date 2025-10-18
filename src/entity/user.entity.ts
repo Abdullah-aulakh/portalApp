@@ -5,11 +5,13 @@ import {
   OneToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
 } from 'typeorm';
 import { UserRoles } from '../enum/user.roles';
 import { Student } from './student.entity';
 import { Teacher } from './teacher.entity';
 import { Admin } from './admin.entity';
+import Encrypt from '../helpers/encrypt.helper';
 
 @Entity('users')
 export class User {
@@ -64,4 +66,9 @@ export class User {
     onDelete: 'CASCADE',
   })
   admin: Admin;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await Encrypt.hashPassword(this.password);
+  }
 }

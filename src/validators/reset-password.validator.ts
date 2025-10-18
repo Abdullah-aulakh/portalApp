@@ -1,7 +1,7 @@
 import { plainToClass } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
 import { NextFunction, Request, Response } from "express";
-import { ResetPasswordDto } from "../dto/reset-password.dto";
+import { ResetPasswordDto } from "../dto/reset.password.dto";
 
 export const resetPasswordValidator = async (
   req: Request,

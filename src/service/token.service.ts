@@ -36,4 +36,11 @@ async findOne(token:string): Promise<Token | null> {
  
     return result.affected !== 0;
   }
+  async deleteAll(userId: string): Promise<boolean> {
+    const result = await this.tokenRepository.delete({
+      user: { id: userId },
+    });
+ 
+    return result.affected !== 0;
+  }
 }

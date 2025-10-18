@@ -6,7 +6,8 @@ import { catchAsync } from "../helpers/catch-async.helper";
 import { UserRoles } from "../enum/user.roles";
 import { departmentRepository,otpRepository } from "../repository/index";
 import { User } from "../entity/user.entity";
-
+import { Token } from "../entity/token.entity";
+import { generateDbTokens } from "../helpers/dbTokens.helper";
 export class AuthController {
   
   static loginUser = catchAsync(async (req: Request, res: Response) => {
@@ -19,6 +20,7 @@ export class AuthController {
 
     const token = await Encrypt.generateToken({ id: user.id });
     const refreshToken = await Encrypt.generateRefreshToken({ id: user.id });
+    await generateDbTokens(user,token,refreshToken);
 
     res.status(200).json({
       user: new UserResponseDto(user),
@@ -31,10 +33,13 @@ export class AuthController {
     const { refreshToken } = req.body;
     if (!refreshToken) return res.status(400).json({ message: "Refresh token is required" });
 
+    const dbExistance = await tokenRepository.findOne(refreshToken);
+    if (!dbExistance) return res.status(401).json({ message: "unauthorized" });
+
     const payload = await Encrypt.verifyToken(refreshToken);
     const newToken = await Encrypt.generateToken({ id: payload.id });
     const newRefreshToken = await Encrypt.generateRefreshToken({ id: payload.id });
-
+    await generateDbTokens(payload,newToken,newRefreshToken);
     res.status(200).json({
       token: newToken,
       refreshToken: newRefreshToken,
@@ -57,7 +62,7 @@ export class AuthController {
       return res.status(400).json({ message: "Invalid OTP" });
     user.password = await Encrypt.hashPassword(password);
     await userRepository.updateUser(user.id, user);
-    await tokenRepository.delete(token);
+    await tokenRepository.deleteAll(user.id);
     res.status(200).json({ message: "Password reset successfully" });
   });
 

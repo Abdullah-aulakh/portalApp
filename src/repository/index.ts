@@ -1,6 +1,6 @@
 import { AppDataSource } from "../config/data-source";
-import { User, Teacher, Department, Student, Token, Otp,Timetable } from "../entity/index";
-import { UserService , TeacherService, DepartmentService, StudentService,TokenService, OtpService,TimetableService } from "../service/index";
+import { User, Teacher, Department, Student, Token, Otp,Timetable,Grade } from "../entity/index";
+import { UserService , TeacherService, DepartmentService, StudentService,TokenService, OtpService,TimetableService,GradeService } from "../service/index";
 export const teacherRepository = new TeacherService(
   AppDataSource.getRepository(Teacher)
 );

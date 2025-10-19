@@ -36,4 +36,9 @@ export class EnrollmentService {
       where: { student: { id } },
     });
   }
+  async findExistingEnrollment(studentId: string, courseId: string): Promise<Enrollment | null> {
+    return await this.enrollmentRepository.findOne({
+      where: { student: { id: studentId }, course: { id: courseId } },
+    });
+  }
 }

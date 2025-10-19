@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 import { Student } from './student.entity';
 import { Course } from './course.entity';
+import { EnrollmentStatus } from '../enum/enrollment.status';
 
 @Entity('enrollments')
 export class Enrollment {
@@ -17,8 +18,8 @@ export class Enrollment {
   })
   course: Course;
 
-  @Column({ default: 'enrolled' })
-  status: 'enrolled' | 'completed' | 'dropped';
+  @Column({ type: 'enum',enum:EnrollmentStatus,default: EnrollmentStatus.ENROLLED })
+  status: EnrollmentStatus;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   enrolledAt: Date;

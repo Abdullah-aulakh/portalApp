@@ -7,6 +7,7 @@ import { StudentService } from "./student.service";
 import { GradeService } from "./grade.service";
 import {TimetableService} from "./timetable.service";
 import { CourseService } from "./course.service";
+import { EnrollmentService } from "./enrollment.service";
 
 export {
   DepartmentService,
@@ -18,4 +19,5 @@ export {
   GradeService,
   TimetableService,
   CourseService,
+  EnrollmentService,
 };

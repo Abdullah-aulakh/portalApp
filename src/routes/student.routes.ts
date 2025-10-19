@@ -10,5 +10,6 @@ Router.get("/", authentication,authorization([UserRoles.ADMIN]),StudentControlle
 Router.get("/:id", authentication,authorization([UserRoles.ADMIN]),StudentController.getStudentById);
 Router.delete("/:id", authentication,authorization([UserRoles.ADMIN]),StudentController.deleteStudentById);
 Router.put("/:id", authentication,authorization([UserRoles.ADMIN]),StudentController.updateStudentById);
+Router.get("/enrollments/:id", authentication,StudentController.getStudentEnrollments);
 
 export { Router as studentRouter }; 

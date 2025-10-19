@@ -31,9 +31,9 @@ export class EnrollmentService {
     await this.enrollmentRepository.save(enrollment);
     return enrollment;
   }
-  async findByStudentId(id: string): Promise<Enrollment | null> {
-    return await this.enrollmentRepository.findOne({
-      where: { student: { id } },
-    });
+  async findByStudentId(id: string): Promise<Enrollment[]> {
+    return await this.enrollmentRepository.find({
+        where: { student: { id } },
+    })
   }
 }

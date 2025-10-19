@@ -47,7 +47,7 @@ export const userValidator = async (
       (req.body.role === UserRoles.STUDENT && !req.body.student) ||
       (req.body.role === UserRoles.ADMIN && !req.body.admin)
     ) {
-      return res.status(400).json({ message: 'User data is incomplete' });
+      return res.status(400).json({ message: ` ${req.body.role} Data is missing` });
     }
 
     // 5️⃣ Validation errors

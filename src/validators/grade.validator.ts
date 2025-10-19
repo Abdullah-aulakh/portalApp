@@ -1,15 +1,15 @@
 import { plainToClass } from "class-transformer";
 import { validate, ValidationError } from "class-validator";
 import { NextFunction, Request, Response } from "express";
-import { LoginDto } from "../dto/auth/login.dto";
+import { CreateGradeDto } from "../dto/grade.dto";
 
-export const loginValidator = async (
+export const gradeValidator = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const loginDto = plainToClass(LoginDto, req.body); // convert plain object to class instance and also do type conversion
-  const errors: ValidationError[] = await validate(loginDto); // validate the class instance
+  const gradeDto = plainToClass(CreateGradeDto, req.body); // convert plain object to class instance and also do type conversion
+  const errors: ValidationError[] = await validate(gradeDto); // validate the class instance
 
   if (errors.length > 0) {
     const errorMessages = errors

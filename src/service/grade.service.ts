@@ -5,12 +5,25 @@ export class GradeService {
   constructor(private readonly gradeRepository: Repository<Grade>) {}
 
   async find(): Promise<Grade[]> {
-    return await this.gradeRepository.find();
+    return await this.gradeRepository.find({
+      relations: {
+        student: {
+          user: true,
+        },
+        course: true,
+      },
+    });
   }
 
   async findById(id: string): Promise<Grade | null> {
     return await this.gradeRepository.findOne({
       where: { id },
+      relations: {
+        student: {
+          user: true,
+        },
+        course: true,
+      },
     });
   }
 

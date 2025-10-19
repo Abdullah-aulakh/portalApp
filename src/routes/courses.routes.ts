@@ -12,6 +12,7 @@ Router.get("/:id", authentication,CourseController.getCourseById);
 Router.post("/", authentication,authorization([UserRoles.ADMIN]), courseValidator,CourseController.createCourse);
 Router.put("/:id", authentication,authorization([UserRoles.ADMIN]),CourseController.updateCourse);
 Router.delete("/:id", authentication,authorization([UserRoles.ADMIN]),CourseController.deleteCourse);
+Router.get("/teacher/:id", authentication,authorization([UserRoles.ADMIN]),CourseController.getTeacherCourses);
 
 
 export { Router as courseRouter };

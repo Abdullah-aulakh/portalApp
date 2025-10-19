@@ -42,4 +42,12 @@ export class CourseController {
     await courseRepository.delete(id);
     res.status(200).json({ message: "Course deleted successfully" });
   });
+
+  static getTeacherCourses = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const teacher = await teacherRepository.findById(id);
+    if (!teacher) return res.status(404).json({ message: "Teacher not found" });
+    const courses = await courseRepository.findByTeacherId(id);
+    res.status(200).json(courses.map(c => new CourseResponseDto(c)));
+  });
 }

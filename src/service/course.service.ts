@@ -33,4 +33,9 @@ import { Repository } from "typeorm";
         where: { code },
       });
     }
+    async findByTeacherId(id: string): Promise<Course[]> {
+      return await this.courseRepository.find({
+        where: { teacher: { id } },
+      });
+    }
 }

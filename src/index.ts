@@ -6,6 +6,8 @@ import { authRouter } from "./routes/auth.routes";
 import { otpRouter } from "./routes/otp.routes";
 import { departmentRouter } from "./routes/department.routes";
 import { studentRouter } from "./routes/student.routes";
+import { gradeRouter } from "./routes/grade.routes";
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +20,7 @@ app.use("/api/otp", otpRouter);
 app.use("/api/departments", departmentRouter);
 app.use("/api/students", studentRouter);
 
+app.use("/api/grades", gradeRouter);
 
 
 AppDataSource.initialize()

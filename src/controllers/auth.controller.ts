@@ -4,7 +4,7 @@ import Encrypt from "../helpers/encrypt.helper";
 import { UserResponseDto } from "../dto/response/user.response.dto";
 import { catchAsync } from "../helpers/catch-async.helper";
 import { UserRoles } from "../enum/user.roles";
-import { departmentRepository,otpRepository } from "../repository/index";
+import { departmentRepository,otpRepository ,studentRepository} from "../repository/index";
 import { User } from "../entity/user.entity";
 import { Token } from "../entity/token.entity";
 import { generateDbTokens } from "../helpers/dbTokens.helper";
@@ -82,6 +82,8 @@ export class AuthController {
       };
      }
      else{
+      const student = await studentRepository.findByRegistrationNumber(req.body.student.registrationNumber);
+      if(student) return res.status(400).json({ message: "Student already exists" });
       userData.student = {
         ...userData.student,
         department: department,

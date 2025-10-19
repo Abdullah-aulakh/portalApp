@@ -12,6 +12,6 @@ Router.post("/", authentication,authorization([UserRoles.ADMIN]),DepartmentContr
 Router.put("/:id", authentication,authorization([UserRoles.ADMIN]),DepartmentController.updateDepartment);
 Router.delete("/:id", authentication,authorization([UserRoles.ADMIN]),DepartmentController.deleteDepartment);
 Router.get("/teachers/:id", authentication,authorization([UserRoles.ADMIN]),DepartmentController.getDepartmentTeachers);
-// Router.get("/students/:id", authentication,authorization([UserRoles.ADMIN]),DepartmentController.getDepartmentStudents);
+Router.get("/students/:id", authentication,authorization([UserRoles.ADMIN]),DepartmentController.getDepartmentStudents);
 
 export { Router as departmentRouter };

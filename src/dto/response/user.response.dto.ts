@@ -4,7 +4,6 @@ export class UserResponseDto {
   lastName: string;
   email: string;
   role: string;
-  isVerified: boolean;
 
   constructor(user: any) {
     this.id = user.id;
@@ -12,6 +11,5 @@ export class UserResponseDto {
     this.lastName = user.lastName;
     this.email = user.email;
     this.role = user.role;
-    this.isVerified = user.isVerified;
   }
 }

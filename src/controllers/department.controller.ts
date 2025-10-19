@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { departmentRepository, teacherRepository } from "../repository/index";
-import { Department } from "../entity/department.entity";
 import { catchAsync } from "../helpers/catch-async.helper";
+import { TeacherResponseDto } from "../dto/response/teacher.response.dto";
+import { StudentResponseDto } from "../dto/response/student.response.dto";
 
 
 export class DepartmentController {
@@ -55,7 +56,13 @@ export class DepartmentController {
     const department = await departmentRepository.findById(req.params.id);
     if (!department) return res.status(404).json({ message: "Department not found" });
     const teachers = await departmentRepository.findTeachers(req.params.id);
-    res.status(200).json(teachers);
+    res.status(200).json(teachers.map(t => new TeacherResponseDto(t)));
   });
 
+  static getDepartmentStudents = catchAsync(async (req: Request, res: Response) => {
+    const department = await departmentRepository.findById(req.params.id);
+    if (!department) return res.status(404).json({ message: "Department not found" });
+    const students = await departmentRepository.findStudents(req.params.id);
+    res.status(200).json(students.map(s => new StudentResponseDto(s)));
+  });
 }

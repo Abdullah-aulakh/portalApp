@@ -13,11 +13,6 @@ export class Timetable {
   })
   course: Course;
 
-  @ManyToOne(() => Teacher, (teacher) => teacher.courses, {
-    onDelete: 'SET NULL',
-  })
-  teacher: Teacher;
-
   @Column()
   dayOfWeek: string; // e.g., "Monday"
 

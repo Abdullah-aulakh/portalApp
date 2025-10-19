@@ -8,6 +8,7 @@ import { Grade } from './grade.entity';
 import { Student } from './student.entity';
 import { Otp } from './otp.entity';
 import { Token } from './token.entity';
+import { Timetable } from './timetable.entity';
 export {
   User,
   Teacher,
@@ -19,4 +20,5 @@ export {
   Student,
   Otp,
   Token,
+  Timetable,
 };

@@ -1,72 +1,93 @@
 import { Request, Response } from "express";
-import { CourseService } from "../services/course.service";
-import { success, failure } from "../utils/response";
+import { courseRepository, enrollmentRepository, studentRepository, teacherRepository, userRepository } from "../repository";
+import { catchAsync } from "../middleware/authentication";
+import { Course } from "../entity/course.entity";
+import { AppDataSource } from "../config/data-source";
+
 
 export class CourseController {
-  private courseService = new CourseService();
+  static getAll = catchAsync(async (req: Request, res: Response) => {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    const courses = await courseRepository.findAllWithRelations(skip, limit);
+    res.json(courses);
+  });
 
-  createCourse = async (req: Request, res: Response) => {
-    try {
-      const course = await this.courseService.createCourse(req.body);
-      res.json(success("Course created successfully", course));
-    } catch (err) {
-      res.status(400).json(failure("Failed to create course", err));
+  static createCourse = catchAsync(async (req: Request, res: Response) => {
+    const { title, description, code, teacherId } = req.body;
+    let teacher = undefined;
+    if (teacherId) {
+      teacher = await teacherRepository.findById(Number(teacherId));
+      if (!teacher) return res.status(404).json({ message: "Teacher not found" });
     }
-  };
 
-  getAllCourses = async (_: Request, res: Response) => {
-    try {
-      const courses = await this.courseService.getAllCourses();
-      res.json(success("Courses fetched successfully", courses));
-    } catch (err) {
-      res.status(500).json(failure("Error fetching courses", err));
-    }
-  };
+    // build a partial course object and cast safely to Course through unknown to satisfy TS
+    const course = await courseRepository.create({
+      title,
+      description,
+      code,
+      teacher,
+    } as unknown as Course);
 
-  getCourseById = async (req: Request, res: Response) => {
-    try {
-      const course = await this.courseService.getCourseById(req.params.id);
-      res.json(success("Course fetched successfully", course));
-    } catch (err) {
-      res.status(404).json(failure("Course not found", err));
-    }
-  };
+    res.status(201).json(course);
+  });
 
-  updateCourse = async (req: Request, res: Response) => {
-    try {
-      const updated = await this.courseService.updateCourse(req.params.id, req.body);
-      res.json(success("Course updated successfully", updated));
-    } catch (err) {
-      res.status(400).json(failure("Failed to update course", err));
+  static updateCourse = catchAsync(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const data = req.body;
+    if (data.teacherId) {
+      const t = await teacherRepository.findById(Number(data.teacherId));
+      if (!t) return res.status(404).json({ message: "Teacher not found" });
+      // @ts-ignore
+      data.teacher = t;
     }
-  };
+    const updated = await courseRepository.update(id, data);
+    if (!updated) return res.status(404).json({ message: "Course not found" });
+    res.json(updated);
+  });
 
-  deleteCourse = async (req: Request, res: Response) => {
-    try {
-      await this.courseService.deleteCourse(req.params.id);
-      res.json(success("Course deleted successfully"));
-    } catch (err) {
-      res.status(400).json(failure("Failed to delete course", err));
-    }
-  };
+  static deleteCourse = catchAsync(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const deleted = await courseRepository.delete(id);
+    if (!deleted) return res.status(404).json({ message: "Course not found" });
+    res.status(200).json({ message: "Deleted" });
+  });
 
-  addStudentToCourse = async (req: Request, res: Response) => {
-    try {
-      const { courseId, studentId } = req.params;
-      const enrollment = await this.courseService.addStudentToCourse(courseId, studentId);
-      res.json(success("Student added to course", enrollment));
-    } catch (err) {
-      res.status(400).json(failure("Failed to add student", err));
-    }
-  };
+  // get courses by teacher id (teachers & admin)
+  static getCoursesByTeacher = catchAsync(async (req: Request, res: Response) => {
+    const teacherId = Number(req.params.teacherId);
+    const courses = await courseRepository.findByTeacherId(teacherId);
+    res.json(courses);
+  });
 
-  getStudentCourses = async (req: Request, res: Response) => {
-    try {
-      const studentId = req.user.id;
-      const courses = await this.courseService.getStudentCourses(studentId);
-      res.json(success("Student courses fetched", courses));
-    } catch (err) {
-      res.status(400).json(failure("Failed to get student courses", err));
-    }
-  };
+  // Admin assigns a student to a course (creates enrollment)
+  static assignStudentToCourse = catchAsync(async (req: Request, res: Response) => {
+    const courseId = Number(req.params.courseId);
+    const { studentId } = req.body;
+    const student = await studentRepository.findById(Number(studentId));
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    const course = await courseRepository.findById(courseId);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const enrollment = await enrollmentRepository.enrollStudent(student, course);
+    res.status(201).json(enrollment);
+  });
+
+  // Students view own enrolled courses
+  static getMyEnrollments = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user;
+    if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+    // find student's profile by user id
+    // userRepository is raw repo; studentRepository has findById which expects student id; so query student by user relation
+    const student = await AppDataSource.getRepository("students").findOne({
+      where: { user: { id: user.id } },
+      relations: ["enrollments", "enrollments.course", "enrollments.course.teacher", "enrollments.course.teacher.user"],
+    });
+
+    if (!student) return res.status(404).json({ message: "Student profile not found" });
+    res.json(student.enrollments);
+  });
 }

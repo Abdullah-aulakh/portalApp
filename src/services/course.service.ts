@@ -1,33 +1,25 @@
-import { CourseRepository } from "../repository/course.repository";
+import { Repository } from "typeorm";
+import { Course } from "../entity/course.entity";
+import { BaseService } from "./base.service";
 
-export class CourseService {
-  private courseRepo = new CourseRepository();
-
-  async createCourse(data: any) {
-    return this.courseRepo.create(data);
+export class CourseService extends BaseService<Course> {
+  constructor(private courseRepo: Repository<Course>) {
+    super(courseRepo);
   }
 
-  async getAllCourses() {
-    return this.courseRepo.findAll();
+  async findAllWithRelations(skip = 0, take = 100) {
+    return this.courseRepo.find({
+      relations: ["teacher", "enrollments", "enrollments.student", "enrollments.student.user"],
+      skip,
+      take,
+      order: ({ createdAt: "DESC" } as any),
+    });
   }
 
-  async getCourseById(id: string) {
-    return this.courseRepo.findById(id);
-  }
-
-  async updateCourse(id: string, data: any) {
-    return this.courseRepo.update(id, data);
-  }
-
-  async deleteCourse(id: string) {
-    return this.courseRepo.delete(id);
-  }
-
-  async addStudentToCourse(courseId: string, studentId: string) {
-    return this.courseRepo.addStudent(courseId, studentId);
-  }
-
-  async getStudentCourses(studentId: string) {
-    return this.courseRepo.findByStudent(studentId);
+  async findByTeacherId(teacherId: number) {
+    return this.courseRepo.find({
+      where: { teacher: { id: teacherId } },
+      relations: ["teacher", "enrollments", "enrollments.student", "enrollments.student.user"],
+    });
   }
 }

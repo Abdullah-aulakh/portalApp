@@ -5,6 +5,7 @@ import { userRouter} from "./routes/user.routes";
 import { authRouter } from "./routes/auth.routes";
 import { otpRouter } from "./routes/otp.routes";
 import { departmentRouter } from "./routes/department.routes";
+import { teacherRouter } from "./routes/teacher.routes";
 import { studentRouter } from "./routes/student.routes";
 import { gradeRouter } from "./routes/grade.routes";
 
@@ -18,6 +19,7 @@ app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/otp", otpRouter);
 app.use("/api/departments", departmentRouter);
+app.use("/api/teachers", teacherRouter);
 app.use("/api/students", studentRouter);
 
 app.use("/api/grades", gradeRouter);

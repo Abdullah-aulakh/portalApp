@@ -4,6 +4,7 @@ import { AppDataSource } from "./config/data-source";
 import { userRouter} from "./routes/user.routes";
 import { authRouter } from "./routes/auth.routes";
 import { otpRouter } from "./routes/otp.routes";
+import { departmentRouter } from "./routes/department.routes";
 
 
 const app = express();
@@ -14,6 +15,8 @@ app.use(express.json());
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/otp", otpRouter);
+app.use("/api/departments", departmentRouter);
+
 
 
 AppDataSource.initialize()

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { timetableRepository} from "../repository/index";
+import { courseRepository, timetableRepository} from "../repository/index";
 import { catchAsync } from "../helpers/catch-async.helper";
 
 
@@ -35,6 +35,9 @@ export class TimetableController {
   });
 
   static createTimetable = catchAsync(async (req: Request, res: Response) => {
+    const course = await courseRepository.findById(req.body.courseId);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+    req.body.course = course;
     const timetable = await timetableRepository.createTimetable(req.body);
     res.status(201).json(timetable);
   });

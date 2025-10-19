@@ -23,3 +23,6 @@ export const studentRepository = new StudentService(
 export const timetableRepository = new TimetableService(
   AppDataSource.getRepository(Timetable)  
 );
+export const gradeRepository = new GradeService(
+  AppDataSource.getRepository(Grade)
+);

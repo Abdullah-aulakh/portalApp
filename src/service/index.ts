@@ -4,7 +4,7 @@ import { TokenService } from "./token.service";
 import { UserService } from "./user.service";
 import { TeacherService } from "./teacher.service";
 import { StudentService } from "./student.service";
-import { TimetableService } from "./timetable.service";
+import { GradeService } from "./grade.service";
 
 export {
   DepartmentService,
@@ -13,5 +13,5 @@ export {
   UserService,
   TeacherService,
   StudentService,
-  TimetableService,
+  GradeService,
 };

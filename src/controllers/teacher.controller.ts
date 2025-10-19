@@ -6,7 +6,7 @@ export class TeacherController {
   
   static getAllTeachers = catchAsync(async (req: Request, res: Response) => {
     const teachers = await teacherRepository.find();
-    res.status(200).json(teachers.map(t => new TeacherResponseDto(t)));
+    res.status(200).json(teachers);
   });
   static getTeacherById = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;

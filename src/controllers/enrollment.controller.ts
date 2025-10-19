@@ -35,7 +35,7 @@ export class EnrollmentController {
   });
 
   static createEnrollment = catchAsync(async (req: Request, res: Response) => {
-    const isAlreadyExists = await enrollmentRepository.findByStudentId(req.body.studentId);
+    const isAlreadyExists = await enrollmentRepository.findExistingEnrollment(req.body.studentId, req.body.courseId);
     if (isAlreadyExists)
       return res.status(400).json({ message: "Student already enrolled in this course" });
     const course = await courseRepository.findById(req.body.courseId);

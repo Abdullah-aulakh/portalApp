@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 import { Student } from './student.entity';
 import { Course } from './course.entity';
+import { GradeTypes } from '../enum/grade.types';
+import { GradeLetters } from '../enum/grade.letters';
 
 @Entity('grades')
 export class Grade {
@@ -23,10 +25,10 @@ export class Grade {
   @Column({ type: 'float', nullable: true })
   totalMarks: number;
 
-  @Column({ nullable: true })
-  grade: string; // e.g., "A", "B", "C"
+  @Column({ nullable: true ,type:"enum",enum:GradeLetters})
+  grade: GradeLetters;
 
-  @Column({nullable:false})
-  type: string;
+  @Column({nullable:false ,type:"enum",enum:GradeTypes})
+  type: GradeTypes;
   
 }

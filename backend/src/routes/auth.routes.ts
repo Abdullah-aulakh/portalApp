@@ -9,7 +9,7 @@ import { userValidator } from '../validators';
 const authRouter = Router();
 
 authRouter.post('/login', AuthController.loginUser);
-authRouter.post('/create',authentication,authorization([UserRoles.ADMIN]),userValidator,AuthController.createUser);
+authRouter.post('/create',userValidator,AuthController.createUser);
 authRouter.post('/refresh-token', AuthController.refreshToken);
 authRouter.post('/reset-password', AuthController.resetPassword);
 

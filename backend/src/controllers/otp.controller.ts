@@ -21,13 +21,16 @@ export class OtpController {
     });
 
     static verify = catchAsync(async (req: Request, res: Response) => {
+        console.log("Verify OTP called with body:", req.body);
         const { otp, email } = req.body;
         const otpRecord = await otpRepository.findOne(otp, email);
+        console.log("Fetched OTP record:", otpRecord);
         if (!otpRecord) return res.status(404).json({ message: "Invalid OTP" });
         if (otpRecord.verified || otpRecord.expiresAt < new Date())
             return res.status(400).json({ message: "Invalid OTP" });
 
         const user = await userRepository.findByEmail(email);
+        console.log("Associated user:", user);
         if (!user) return res.status(404).json({ message: "User not found" });
 
         otpRecord.verified = true;

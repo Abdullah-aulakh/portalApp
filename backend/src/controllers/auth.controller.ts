@@ -20,18 +20,37 @@ export class AuthController {
 
     const token = await Encrypt.generateToken({ id: user.id });
     const refreshToken = await Encrypt.generateRefreshToken({ id: user.id });
-    await generateDbTokens(user,token,refreshToken);
+    await generateDbTokens(user, token, refreshToken);
 
+    // Set access token cookie (short lived)
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000, // 1 hour
+      path: "/",
+    });
+
+    // Set refresh token cookie (longer lived)
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: "/",
+    });
+
+    // Send only user info in body. Tokens are in cookies.
     res.status(200).json({
       user: new UserResponseDto(user),
-      token,
-      refreshToken,
     });
   });
 
-  static refreshToken = catchAsync(async (req: Request, res: Response) => { 
-    const { refreshToken } = req.body;
-    if (!refreshToken) return res.status(400).json({ message: "Refresh token is required" });
+  static refreshToken = catchAsync(async (req: Request, res: Response) => {
+    // Read refresh token from cookie instead of request body
+    const refreshToken = (req as any).cookies?.refreshToken;
+    if (!refreshToken)
+      return res.status(400).json({ message: "Refresh token cookie is required" });
 
     const dbExistance = await tokenRepository.findOne(refreshToken);
     if (!dbExistance) return res.status(401).json({ message: "unauthorized" });
@@ -39,11 +58,26 @@ export class AuthController {
     const payload = await Encrypt.verifyToken(refreshToken);
     const newToken = await Encrypt.generateToken({ id: payload.id });
     const newRefreshToken = await Encrypt.generateRefreshToken({ id: payload.id });
-    await generateDbTokens(payload,newToken,newRefreshToken);
-    res.status(200).json({
-      token: newToken,
-      refreshToken: newRefreshToken,
+    await generateDbTokens(payload, newToken, newRefreshToken);
+
+    // Update cookies with new tokens
+    res.cookie("accessToken", newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 1000,
+      path: "/",
     });
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
+
+    // Return a minimal success response; tokens are in cookies
+    res.status(200).json({ message: "tokens refreshed" });
   });
 
  
@@ -94,5 +128,13 @@ export class AuthController {
     const user = await userRepository.createUser(userData);
     res.status(201).json(new UserResponseDto(user));
     
+  });
+
+  static logoutUser = catchAsync(async (req: Request, res: Response) => {
+    const user = req.headers["user"] as any;
+    await tokenRepository.deleteAll(user.id);
+    res.clearCookie("accessToken", { path: "/" });
+    res.clearCookie("refreshToken", { path: "/" });
+    res.status(200).json({ message: "Logged out successfully" });
   });
 }

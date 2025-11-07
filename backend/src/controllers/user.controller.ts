@@ -29,4 +29,10 @@ export class UserController {
     await userRepository.delete(id);
     res.status(200).json({ message: "User deleted successfully" });
   });
+  static getUserProfile = catchAsync(async (req: Request, res: Response) => {
+     const user = req.headers["user"] as any;
+    const userData = await userRepository.findById(user.id);
+    if (!userData) return res.status(404).json({ message: "User not found" });
+    res.status(200).json(new UserResponseDto(userData));
+  });
 }

@@ -1,5 +1,7 @@
 import "reflect-metadata";
 import  express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import { AppDataSource } from "./config/data-source";
 import { userRouter} from "./routes/user.routes";
 import { authRouter } from "./routes/auth.routes";
@@ -15,6 +17,17 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
+
+// Allow frontend running on localhost:5173 to access (adjusted per request).
+// We enable credentials so cookies can be set from the server.
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
+
+app.use(cookieParser());
 
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);

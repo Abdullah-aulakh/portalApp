@@ -39,6 +39,10 @@ app.use("/api/students", studentRouter);
 app.use("/api/admin",adminRouter)
 app.use("/api/grades", gradeRouter);
 
+app.get("/", (req, res) => {
+  console.log(req.headers.origin);
+  res.send("Hello! Your request origin was logged in the server console.");
+});
 
 AppDataSource.initialize()
   .then(async () => {

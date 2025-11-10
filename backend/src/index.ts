@@ -28,10 +28,6 @@ app.use(
 );
 
 app.use(cookieParser());
-app.get("/", (req, res) => {
-  console.log(req.headers);
-  res.send("Hello! Your request origin was logged in the server console.");
-});
 
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);

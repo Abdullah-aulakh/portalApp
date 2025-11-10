@@ -43,9 +43,6 @@ app.use("/api/grades", gradeRouter);
 
 AppDataSource.initialize()
   .then(async () => {
-    app.listen(PORT, () => {
-      console.log("Server is running on http://localhost:" + PORT);
-    });
     console.log("Data Source has been initialized!");
   })
   .catch((error) => console.log(error));

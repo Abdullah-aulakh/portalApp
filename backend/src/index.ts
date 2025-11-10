@@ -17,7 +17,8 @@ import Serverless from "serverless-http";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 // Allow frontend running on localhost:5173 to access (adjusted per request).
 // We enable credentials so cookies can be set from the server.
@@ -29,6 +30,7 @@ app.use(
 );
 
 app.use(cookieParser());
+
 
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);

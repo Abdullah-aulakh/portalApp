@@ -73,6 +73,15 @@ export class DepartmentService {
         }
       }
     });
+   
     return department?.students ?? [];
   }
+   async findByName(name:string):Promise<Department|null>{
+      return await this.departmentRepository.findOne({
+        where: { name },
+      });
+    }
+    async getTotal(): Promise<number> {
+      return await this.departmentRepository.count();
+    }
 }

@@ -39,5 +39,8 @@ export class StudentService {
     await this.studentRepository.save(student);
     return student;
   }
+  async getTotal(): Promise<number> {
+    return await this.studentRepository.count();
+  }
 
 }

@@ -24,6 +24,8 @@ export class DepartmentController {
       if (!headOfDepartment) return res.status(404).json({ message: "Teacher not found" });
       req.body.headOfDepartment = headOfDepartment;
     }
+    const existing = await departmentRepository.findByName(req.body.name);
+    if(existing) return res.status(400).json({ message: "Department already exists" });
     const department = await departmentRepository.createDepartment(req.body);
     res.status(201).json(department);
   });

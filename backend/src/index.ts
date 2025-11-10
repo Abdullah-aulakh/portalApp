@@ -11,7 +11,7 @@ import {timetableRouter} from "./routes/timetable.routes";
 import { teacherRouter } from "./routes/teacher.routes";
 import { studentRouter } from "./routes/student.routes";
 import { gradeRouter } from "./routes/grade.routes";
-
+import { adminRouter } from "./routes/admin.routes";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,7 +36,7 @@ app.use("/api/departments", departmentRouter);
 app.use("/api/timetables", timetableRouter);
 app.use("/api/teachers", teacherRouter);
 app.use("/api/students", studentRouter);
-
+app.use("/api/admin",adminRouter)
 app.use("/api/grades", gradeRouter);
 
 

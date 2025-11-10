@@ -12,6 +12,7 @@ import { teacherRouter } from "./routes/teacher.routes";
 import { studentRouter } from "./routes/student.routes";
 import { gradeRouter } from "./routes/grade.routes";
 import { adminRouter } from "./routes/admin.routes";
+import Serverless from "serverless-http";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,7 +41,6 @@ app.use("/api/admin",adminRouter)
 app.use("/api/grades", gradeRouter);
 
 
-
 AppDataSource.initialize()
   .then(async () => {
     app.listen(PORT, () => {
@@ -49,3 +49,5 @@ AppDataSource.initialize()
     console.log("Data Source has been initialized!");
   })
   .catch((error) => console.log(error));
+
+export default Serverless(app);

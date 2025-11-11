@@ -33,4 +33,12 @@ export class StudentController {
     const updatedStudent = await studentRepository.updateStudent(id, req.body);
     res.status(200).json(updatedStudent);
   });
+
+  static getStudentByRegistrationNumber = catchAsync(async (req: Request, res: Response) => {
+    const { registrationNumber } = req.params;
+    const student = await studentRepository.findByRegistrationNumber(registrationNumber);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    console.log(student);
+    res.status(200).json(new StudentResponseDto(student));
+  });
 }

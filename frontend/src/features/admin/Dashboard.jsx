@@ -1,7 +1,6 @@
 import React, { use } from "react";
 import { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
 import DashboardCards from "@components/DashboardCards";
 import { FaBuilding } from "react-icons/fa";
 import { FaChalkboardTeacher } from "react-icons/fa";
@@ -55,6 +54,8 @@ const Dashboard = () => {
   }, [response]);
 
   return (
+    <>
+    {loading && <FullPageLoader />}
     <div className="p-8 bg-white/90 min-h rounded-3xl shadow-xl border-2 border-[var(--primary-color)]">
       <Tabs>
         {/* Tab headers */}
@@ -85,6 +86,7 @@ const Dashboard = () => {
         </TabPanel>
       </Tabs>
     </div>
+    </>
   );
 };
 

@@ -7,6 +7,7 @@ import { StudentController } from "../controllers/student.controller";
 const Router = express.Router();
 
 Router.get("/", authentication,authorization([UserRoles.ADMIN]),StudentController.getAllStudents);
+Router.get("/reg/:registrationNumber", authentication,authorization([UserRoles.ADMIN]),StudentController.getStudentByRegistrationNumber);
 Router.get("/:id", authentication,authorization([UserRoles.ADMIN]),StudentController.getStudentById);
 Router.delete("/:id", authentication,authorization([UserRoles.ADMIN]),StudentController.deleteStudentById);
 Router.put("/:id", authentication,authorization([UserRoles.ADMIN]),StudentController.updateStudentById);

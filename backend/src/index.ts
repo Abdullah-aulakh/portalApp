@@ -12,13 +12,13 @@ import { teacherRouter } from "./routes/teacher.routes";
 import { studentRouter } from "./routes/student.routes";
 import { gradeRouter } from "./routes/grade.routes";
 import { adminRouter } from "./routes/admin.routes";
-import Serverless from "serverless-http";
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json({ limit: "5mb" }));
-app.use(express.urlencoded({ extended: true, limit: "5mb" }));
+app.use(express.json());
+
 
 // Allow frontend running on localhost:5173 to access (adjusted per request).
 // We enable credentials so cookies can be set from the server.
@@ -46,7 +46,9 @@ app.use("/api/grades", gradeRouter);
 AppDataSource.initialize()
   .then(async () => {
     console.log("Data Source has been initialized!");
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
   })
   .catch((error) => console.log(error));
 
-export default Serverless(app);

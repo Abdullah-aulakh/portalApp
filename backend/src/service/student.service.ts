@@ -26,6 +26,10 @@ export class StudentService {
  async findByRegistrationNumber(registrationNumber: string): Promise<Student | null> {
     return await this.studentRepository.findOne({
       where: { registrationNumber },
+      relations: {
+        user:true,
+        department:true,
+      }
     });
   }
   async delete(id: string): Promise<Boolean> {

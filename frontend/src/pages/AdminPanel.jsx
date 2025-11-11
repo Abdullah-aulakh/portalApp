@@ -10,7 +10,9 @@ const AdminPanel = () => {
       title: "Users",
       icon: FaUser,
       path: "users",
-      subMenu: [{ title: "Create User", path: "users/create-user" }],
+      subMenu: [{ title: "Create User", path: "users/create-user" },
+        { title: "Manage Users", path: "users/manage-users" }
+      ],
     },
     {
       title: "Departments",

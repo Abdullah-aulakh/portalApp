@@ -11,6 +11,7 @@ export class StudentResponseDto {
     lastName: string;
     email: string;
     profilePicture?: string | null;
+    role:string;
   };
 
   department: {
@@ -30,6 +31,7 @@ export class StudentResponseDto {
       lastName: student.user.lastName,
       email: student.user.email,
       profilePicture: student.user.profilePicture,
+      role:student.user.role
     };
 
     this.department = {

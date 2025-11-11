@@ -11,6 +11,7 @@ import { generateDbTokens } from "../helpers/dbTokens.helper";
 export class AuthController {
   
   static loginUser = catchAsync(async (req: Request, res: Response) => {
+    console.log(req.headers);
     const { email, password } = req.body;
     const user = await userRepository.findByEmail(email);
     if (!user) return res.status(404).json({ message: "User not found" });

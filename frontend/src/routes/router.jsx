@@ -11,6 +11,7 @@ import StudentOnly from "./StudentOnly";
 
 import AdminPanel from "@/pages/AdminPanel";
 import CreateUserPage from "@/pages/CreateUserPage";
+import ManageUsersPage from "../pages/ManageUsersPage";
 import TeacherPanel from "@/pages/TeacherPanel";
 import StudentPanel from "@/pages/StudentPanel";
 import CreateDepartmentPage from "@/pages/CreateDepartmentPage";
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
               {index:true, element:<Navigate to="dashboard" replace />},
               {path:"dashboard", element:<Dashboard />},
               { path: "users/create-user", element: <CreateUserPage /> },
+              { path: "users/manage-users", element: <ManageUsersPage /> },
               { path: "departments/create-department", element: <CreateDepartmentPage /> },
             ]
           },

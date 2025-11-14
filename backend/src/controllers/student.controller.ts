@@ -13,7 +13,7 @@ export class StudentController {
     const { id } = req.params;
     const student = await studentRepository.findById(id);
     if (!student) return res.status(404).json({ message: "Student not found" });
-    res.status(200).json(new StudentResponseDto(student));
+    res.status(200).json(student);
   });
 
   static deleteStudentById = catchAsync(async (req: Request, res: Response) => {

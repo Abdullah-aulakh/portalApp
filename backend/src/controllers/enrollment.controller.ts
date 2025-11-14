@@ -7,7 +7,7 @@ export class EnrollmentController {
   
   static getAllEnrollments = catchAsync(async (req: Request, res: Response) => {
     const enrollments = await enrollmentRepository.find();
-    res.status(200).json(enrollments.map(e => new EnrollmentResponseDto(e)));
+    res.status(200).json(enrollments);
   });
   static getEnrollmentById = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;

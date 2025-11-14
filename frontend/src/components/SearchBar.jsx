@@ -1,10 +1,10 @@
-import { use, useEffect, useState } from "react";
-import useAxios from "@/hooks/useAxios"; // adjust path if needed
+import { useState, useEffect } from "react";
+import useAxios from "@/hooks/useAxios";
 import Button from "@/components/CustomButton";
 import FullpageLoader from "@/components/FullPageLoader";
 import Swal from "sweetalert2";
 
-const SearchBar = ({ endpoint,placeholder,setResults }) => {
+const SearchBar = ({ endpoint, placeholder, setResults }) => {
   const [query, setQuery] = useState("");
   const { response, error, loading, fetchData } = useAxios();
 
@@ -20,30 +20,31 @@ const SearchBar = ({ endpoint,placeholder,setResults }) => {
     if (response) {
       setResults(response);
     }
-  }, [response]);
+  }, [response, setResults]);
 
   useEffect(() => {
     if (error) {
-      console.log(error);
       Swal.fire({
         title: "Oops...",
         text: error?.message || "Something went wrong!",
         icon: "error",
         confirmButtonText: "Ok",
+        customClass: {
+          popup: 'text-sm sm:text-base'
+        }
       });
-      return;
     }
   }, [error]);
 
   return (
-    <div className="flex items-center gap-2 p-3 rounded-lg shadow w-full">
-        {loading&& <FullpageLoader/>}
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-3 rounded-lg shadow w-full">
+      {loading && <FullpageLoader />}
       <input
         type="text"
         placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="flex-1 border-2 border-(--color-primary) rounded-md px-3 py-2 text-sm focus:outline-none"
+        className="flex-1 border-2 border-(--color-primary) rounded-lg px-3 py-2 text-sm focus:outline-none min-w-0"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             handleSearch();
@@ -51,11 +52,13 @@ const SearchBar = ({ endpoint,placeholder,setResults }) => {
         }}
       />
       <Button
-        onClick={handleSearch} 
+        onClick={handleSearch}
         disabled={loading}
-      >Search</Button>
-
-      
+        size="sm"
+        className="w-full sm:w-auto"
+      >
+        {loading ? "Searching..." : "Search"}
+      </Button>
     </div>
   );
 };

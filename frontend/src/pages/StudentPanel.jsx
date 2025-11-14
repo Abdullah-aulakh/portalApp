@@ -1,21 +1,54 @@
-import { Card } from 'react-bootstrap';
-import { useAuth } from '@/context/AuthContext';
-import { Button } from 'react-bootstrap';
-import { useLogout } from '@/hooks/useLogout';
+import CustomSidebar from "@/components/CustomSideBar";
+import { FaHome, FaBook, FaChartBar, FaCalendarAlt, FaUser, FaGraduationCap } from "react-icons/fa";
+import { Outlet } from "react-router";
+import TopNavbar from "@/components/TopNavBar";
 
 const StudentPanel = () => {
-  const { user } = useAuth();
-  const { logout ,loading} = useLogout();
+  const menuData = [
+    { title: "Dashboard", icon: FaHome, path: "dashboard" },
+    {
+      title: "Academics",
+      icon: FaBook,
+      path: "academics",
+      subMenu: [
+        { title: "My Courses", path: "academics/courses" },
+        { title: "My Grades", path: "academics/grades" },
+        { title: "Enrollments", path: "academics/enrollments" },
+      ],
+    },
+    {
+      title: "Schedule",
+      icon: FaCalendarAlt,
+      path: "schedule",
+      subMenu: [
+        { title: "Timetable", path: "schedule/timetable" },
+        { title: "Attendance", path: "schedule/attendance" },
+      ],
+    },
+    {
+      title: "Profile",
+      icon: FaUser,
+      path: "profile",
+    },
+  ];
+
   return (
-    <div>
-      <h2 className="mb-3">Student Panel</h2>
-      <Card className="p-3">
-        <h5>Your profile</h5>
-        <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(user, null, 2)}</pre>
-      </Card>
-      <Button onClick={() => logout()} className="ms-2" disabled={loading}>
-            {loading ? "Logging out..." : "Logout"}
-        </Button>
+    <div className="flex flex-col h-screen">
+      {/* Top Navbar */}
+      <div className="flex-shrink-0">
+        <TopNavbar />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-1 overflow-hidden ml-[-2px]">
+        <div className="flex-shrink-0 transition-all duration-300 bg-gray-100 mt-3">
+          <CustomSidebar menuData={menuData} basePath="/student" />
+        </div>
+
+        <div className="flex-1 p-6 overflow-auto bg-gray-100">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 };

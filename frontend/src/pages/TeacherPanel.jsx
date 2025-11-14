@@ -1,21 +1,59 @@
-import { Card } from 'react-bootstrap';
-import { useAuth } from '@/context/AuthContext';
-import { Button } from 'react-bootstrap';
-import { useLogout } from '@/hooks/useLogout';
+import CustomSidebar from "@/components/CustomSideBar";
+import { FaHome, FaChalkboardTeacher,FaChartBar, FaUsers, FaCalendarAlt } from "react-icons/fa";
+import { Outlet } from "react-router";
+import TopNavbar from "@/components/TopNavBar";
 
 const TeacherPanel = () => {
-  const { user } = useAuth();
-    const { logout ,loading} = useLogout();
+  const menuData = [
+    { title: "Dashboard", icon: FaHome, path: "dashboard" },
+    {
+      title: "Teaching",
+      icon: FaChalkboardTeacher,
+      path: "teaching",
+      subMenu: [
+        { title: "My Courses", path: "teaching/courses" },
+        { title: "Manage Grades", path: "teaching/grades" },
+        { title: "Attendance", path: "teaching/attendance" },
+      ],
+    },
+    {
+      title: "Students",
+      icon: FaUsers,
+      path: "students",
+      subMenu: [
+        { title: "Class Students", path: "students/class" },
+        { title: "Student Performance", path: "students/performance" },
+      ],
+    },
+    {
+      title: "Schedule",
+      icon: FaCalendarAlt,
+      path: "schedule",
+    },
+    {
+      title: "Analytics",
+      icon: FaChartBar,
+      path: "analytics",
+    },
+  ];
+
   return (
-    <div>
-      <h2 className="mb-3">Teacher Panel</h2>
-      <Card className="p-3">
-        <h5>Your profile</h5>
-        <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(user, null, 2)}</pre>
-      </Card>
-      <Button onClick={() => logout()} className="ms-2" disabled={loading}>
-            {loading ? "Logging out..." : "Logout"}
-        </Button>
+    <div className="flex flex-col h-screen">
+      {/* Top Navbar */}
+      <div className="shrink-0">
+        <TopNavbar />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex flex-1 overflow-hidden -ml-0.5">
+        <div className="shrink-0 transition-all duration-300 bg-gray-100 mt-3">
+          <CustomSidebar menuData={menuData} basePath="/teacher" />
+        </div>
+
+        <div className="flex-1 p-6 overflow-auto bg-gray-100">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 };

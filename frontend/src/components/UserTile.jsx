@@ -2,8 +2,10 @@
 import React from "react";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { TbListDetails } from "react-icons/tb";
-
+import StudentDetailsPage from "@/pages/StudentDetailsPage";
+import { useNavigate } from "react-router";
 const UserTile = ({ data, onViewDetails }) => {
+    const navigate = useNavigate();
   return (
     <div className="flex items-center justify-between bg-white/90 shadow-md rounded-lg p-4 gap-4 w-full border-2 border-[var(--color-primary)]">
       {/* Left: User Image */}
@@ -38,7 +40,7 @@ const UserTile = ({ data, onViewDetails }) => {
 
       {/* Right: View Details */}
       <button
-        onClick={() => onViewDetails && onViewDetails(data)}
+        onClick={() => navigate('/admin/users/student/details/',{state:{student:data}})}
         className="flex items-center justify-center p-2 rounded-full hover:cursor-pointer hover:text-white transition"
         title="View Details"
       >

@@ -2,7 +2,6 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import SearchBar from "@/components/SearchBar";
 import UserTile from "@/components/UserTile";
 import { useState } from "react";
-
 const ManageUsersPage = () => {
 
 const [student, setStudent] = useState(null);
@@ -24,22 +23,6 @@ const studentTabPanel = (
     }
   </div>
 );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

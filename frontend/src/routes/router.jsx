@@ -16,6 +16,7 @@ import TeacherPanel from "@/pages/TeacherPanel";
 import StudentPanel from "@/pages/StudentPanel";
 import CreateDepartmentPage from "@/pages/CreateDepartmentPage";
 import Dashboard from "@/features/admin/Dashboard";
+import StudentDetailsPage from "../pages/StudentDetailsPage";
 import { RoutePath } from "./routes";
 
 const router = createBrowserRouter([
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
               {path:"dashboard", element:<Dashboard />},
               { path: "users/create-user", element: <CreateUserPage /> },
               { path: "users/manage-users", element: <ManageUsersPage /> },
+              { path: "users/student/details", element: <StudentDetailsPage /> },
               { path: "departments/create-department", element: <CreateDepartmentPage /> },
             ]
           },

@@ -15,14 +15,18 @@ import ManageUsersPage from "@/pages/ManageUsersPage";
 import TeacherPanel from "@/pages/TeacherPanel";
 import StudentPanel from "@/pages/StudentPanel";
 import CreateDepartmentPage from "@/pages/CreateDepartmentPage";
-import ManageDepartmentsPage from "@/pages/ManageDepartmentsPage"; // ⬅️ IMPORT THE NEW COMPONENT
-import Dashboard from "@/features/admin/Dashboard";
+import ManageDepartmentsPage from "@/pages/ManageDepartmentsPage"; 
+import AdminDashboard from "@/features/admin/Dashboard";
 import StudentDetailsPage from "../pages/StudentDetailsPage";
 import { RoutePath } from "./routes";
 import CreateCoursePage from "@/pages/CreateCoursePage";
 import ManageCoursesPage from "@/pages/ManageCoursesPage";
 import CreateEnrollmentPage from "@/pages/CreateEnrollmentPage";
 import ManageEnrollmentsPage from "@/pages/ManageEnrollmentsPage";
+
+import StudentDashboard from "@/features/student/Dashboard";
+import TimetablePage from "@/features/student/TimeTablePage";
+import AttendancePage from "../features/student/AttendancePage";
 
 
 
@@ -42,7 +46,15 @@ const router = createBrowserRouter([
       {
         element: <StudentOnly />,
         children: [
-          { path: "/student", element: <StudentPanel /> },
+          { path: "/student", element: <StudentPanel />,
+            children: [
+              {index:true, element:<Navigate to="dashboard" replace />},
+              {path:"dashboard", element:<StudentDashboard />},
+              {path:"timetable", element:<TimetablePage />},
+              {path:"attendance", element:<AttendancePage />},
+            ]
+           },
+
         ],
       },
 
@@ -54,7 +66,7 @@ const router = createBrowserRouter([
             element: <AdminPanel />,
             children: [
               {index:true, element:<Navigate to="dashboard" replace />},
-              {path:"dashboard", element:<Dashboard />},
+              {path:"dashboard", element:<AdminDashboard />},
               { path: "users/create-user", element: <CreateUserPage /> },
               { path: "users/manage-users", element: <ManageUsersPage /> },
               { path: "users/student/details", element: <StudentDetailsPage /> },

@@ -46,5 +46,15 @@ export class StudentService {
   async getTotal(): Promise<number> {
     return await this.studentRepository.count();
   }
+  async getStudentByUserId(userId: string): Promise<Student | null> {
+    return await this.studentRepository.findOne({
+      where: { user:{
+        id:userId
+      } },
+      relations: {
+        department:true,
+      }
+    });
+  }
 
 }

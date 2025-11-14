@@ -7,6 +7,9 @@ import { StudentController } from "../controllers/student.controller";
 const Router = express.Router();
 
 Router.get("/", authentication,authorization([UserRoles.ADMIN]),StudentController.getAllStudents);
+Router.get("/getProfile/:id", authentication,authorization([UserRoles.STUDENT,UserRoles.ADMIN]),StudentController.getStudentProfile);
+Router.get("/timetable/:id", authentication,authorization([UserRoles.STUDENT,UserRoles.ADMIN]),StudentController.getStudentTimeTable);
+Router.get("/attendance/:id", authentication,authorization([UserRoles.STUDENT,UserRoles.ADMIN]),StudentController.getStudentAttendanceData);
 Router.get("/reg/:registrationNumber", authentication,authorization([UserRoles.ADMIN]),StudentController.getStudentByRegistrationNumber);
 Router.get("/:id", authentication,authorization([UserRoles.ADMIN]),StudentController.getStudentById);
 Router.delete("/:id", authentication,authorization([UserRoles.ADMIN]),StudentController.deleteStudentById);

@@ -38,4 +38,8 @@ export class TimetableController {
     const timetable = await timetableRepository.createTimetable(req.body);
     res.status(201).json(timetable);
   });
+
+ 
+
+  
 }   

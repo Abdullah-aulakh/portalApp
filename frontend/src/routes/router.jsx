@@ -11,20 +11,26 @@ import StudentOnly from "./StudentOnly";
 
 import AdminPanel from "@/pages/AdminPanel";
 import CreateUserPage from "@/pages/CreateUserPage";
-import ManageUsersPage from "../pages/ManageUsersPage";
+import ManageUsersPage from "@/pages/ManageUsersPage";
 import TeacherPanel from "@/pages/TeacherPanel";
 import StudentPanel from "@/pages/StudentPanel";
 import CreateDepartmentPage from "@/pages/CreateDepartmentPage";
+import ManageDepartmentsPage from "@/pages/ManageDepartmentsPage"; // ⬅️ IMPORT THE NEW COMPONENT
 import Dashboard from "@/features/admin/Dashboard";
 import StudentDetailsPage from "../pages/StudentDetailsPage";
 import { RoutePath } from "./routes";
+import CreateCoursePage from "@/pages/CreateCoursePage";
+import ManageCoursesPage from "@/pages/ManageCoursesPage";
+import CreateEnrollmentPage from "@/pages/CreateEnrollmentPage";
+import ManageEnrollmentsPage from "@/pages/ManageEnrollmentsPage";
+
+
 
 const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
       { path: "/", element: <App /> },
-
 
       {
         element: <TeacherOnly />,
@@ -43,7 +49,8 @@ const router = createBrowserRouter([
       {
         element: <AdminOnly />,
         children: [
-          { path: "/admin",
+          { 
+            path: "/admin",
             element: <AdminPanel />,
             children: [
               {index:true, element:<Navigate to="dashboard" replace />},
@@ -52,14 +59,17 @@ const router = createBrowserRouter([
               { path: "users/manage-users", element: <ManageUsersPage /> },
               { path: "users/student/details", element: <StudentDetailsPage /> },
               { path: "departments/create-department", element: <CreateDepartmentPage /> },
+              { path: "departments/manage-departments", element: <ManageDepartmentsPage /> }, 
+              { path: "courses/create-course", element: <CreateCoursePage /> },
+              { path: "courses/manage-courses", element: <ManageCoursesPage /> },
+              { path: "enrollments/create-enrollment", element: <CreateEnrollmentPage /> },
+              { path: "enrollments/manage-enrollments", element: <ManageEnrollmentsPage /> },
             ]
           },
-          
         ],
       },
     ],
   },
-
 
   {
     path: RoutePath.AUTH,

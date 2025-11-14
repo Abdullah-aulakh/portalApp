@@ -2,10 +2,17 @@ import CustomSidebar from "@/components/CustomSideBar";
 import { FaHome, FaBook, FaChartBar, FaCalendarAlt, FaUser, FaGraduationCap } from "react-icons/fa";
 import { Outlet } from "react-router";
 import TopNavbar from "@/components/TopNavBar";
+import { title } from "framer-motion/client";
+import { MdEventAvailable } from "react-icons/md";
 
 const StudentPanel = () => {
   const menuData = [
     { title: "Dashboard", icon: FaHome, path: "dashboard" },
+    {
+      title: "Profile",
+      icon: FaUser,
+      path: "profile",
+    },
     {
       title: "Academics",
       icon: FaBook,
@@ -17,31 +24,29 @@ const StudentPanel = () => {
       ],
     },
     {
-      title: "Schedule",
+      title: "Timetable",
       icon: FaCalendarAlt,
-      path: "schedule",
-      subMenu: [
-        { title: "Timetable", path: "schedule/timetable" },
-        { title: "Attendance", path: "schedule/attendance" },
-      ],
+      path: "timetable",
+     
     },
     {
-      title: "Profile",
-      icon: FaUser,
-      path: "profile",
-    },
+      title: "Attendance",
+      icon: MdEventAvailable,
+      path: "attendance",
+    }
+    
   ];
 
   return (
     <div className="flex flex-col h-screen">
       {/* Top Navbar */}
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <TopNavbar />
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden ml-[-2px]">
-        <div className="flex-shrink-0 transition-all duration-300 bg-gray-100 mt-3">
+      <div className="flex flex-1 overflow-hidden -ml-0.5">
+        <div className="shrink-0 transition-all duration-300 bg-gray-100 mt-3">
           <CustomSidebar menuData={menuData} basePath="/student" />
         </div>
 

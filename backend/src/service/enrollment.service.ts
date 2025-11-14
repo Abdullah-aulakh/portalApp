@@ -1,5 +1,6 @@
 import { Repository } from "typeorm";
 import { Enrollment } from "../entity/enrollment.entity";
+import { EnrollmentStatus } from "../enum/enrollment.status";
 
 export class EnrollmentService {
   constructor(private readonly enrollmentRepository: Repository<Enrollment>) {}
@@ -39,6 +40,18 @@ export class EnrollmentService {
   async findExistingEnrollment(studentId: string, courseId: string): Promise<Enrollment | null> {
     return await this.enrollmentRepository.findOne({
       where: { student: { id: studentId }, course: { id: courseId } },
+    });
+  }
+  async findActiveEnrollments(studentId: string): Promise<Enrollment[]> {
+    return await this.enrollmentRepository.find({
+      where: { student: { id: studentId }, status: EnrollmentStatus.ENROLLED },
+      relations:{
+        course:{
+          teacher:{
+            user:true
+          }
+        }
+      }
     });
   }
 }

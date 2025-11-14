@@ -31,4 +31,16 @@ export class TimetableService {
     await this.timetableRepository.save(timetable);
     return timetable;
   }
+
+  async findByCourseAndDay(id: string,day:string): Promise<Timetable[]> {
+    console.log(day);
+    return await this.timetableRepository.find({
+      where: { course:{id} ,dayOfWeek:day },
+    });
+  }
+  async findByCourse(id: string): Promise<Timetable[]> {
+    return await this.timetableRepository.find({
+      where: { course:{id} },
+    });
+  }
 }

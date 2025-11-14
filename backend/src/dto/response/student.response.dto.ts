@@ -5,19 +5,20 @@ export class StudentResponseDto {
   currentSemester: number;
   isEnrolled: boolean;
 
-  user: {
+  user?: {
     id: string;
     firstName: string;
     lastName: string;
     email: string;
     profilePicture?: string | null;
-    role:string;
+    role: string;
   };
 
-  department: {
+  department?: {
     id: string;
     name: string;
   };
+
   constructor(student: any) {
     this.id = student.id;
     this.registrationNumber = student.registrationNumber;
@@ -25,18 +26,24 @@ export class StudentResponseDto {
     this.currentSemester = student.currentSemester;
     this.isEnrolled = student.isEnrolled;
 
-    this.user = {
-      id: student.user.id,
-      firstName: student.user.firstName,
-      lastName: student.user.lastName,
-      email: student.user.email,
-      profilePicture: student.user.profilePicture,
-      role:student.user.role
-    };
+    // Optional user
+    if (student.user) {
+      this.user = {
+        id: student.user.id,
+        firstName: student.user.firstName,
+        lastName: student.user.lastName,
+        email: student.user.email,
+        profilePicture: student.user.profilePicture,
+        role: student.user.role,
+      };
+    }
 
-    this.department = {
-      id: student.department.id,
-      name: student.department.name,
-    };
+    // Optional department
+    if (student.department) {
+      this.department = {
+        id: student.department.id,
+        name: student.department.name,
+      };
+    }
   }
 }

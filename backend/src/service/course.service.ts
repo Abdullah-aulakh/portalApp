@@ -8,8 +8,9 @@ import { Repository } from "typeorm";
       return await this.courseRepository.find();
     }
     async findById(id: string): Promise<Course | null> {
+      console.log(id);
       return await this.courseRepository.findOne({
-        where: { id },
+        where: { id:"d15b9af0-2ac2-4b87-abd8-47a1609468ae" },
       });
     }
     async createCourse(course: Course): Promise<Course> {

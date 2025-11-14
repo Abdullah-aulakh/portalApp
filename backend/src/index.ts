@@ -12,6 +12,8 @@ import { teacherRouter } from "./routes/teacher.routes";
 import { studentRouter } from "./routes/student.routes";
 import { gradeRouter } from "./routes/grade.routes";
 import { adminRouter } from "./routes/admin.routes";
+import { enrollmentRouter } from "./routes/enrollment.routes";
+import {courseRouter} from "./routes/courses.routes";
 
 
 const app = express();
@@ -41,7 +43,8 @@ app.use("/api/teachers", teacherRouter);
 app.use("/api/students", studentRouter);
 app.use("/api/admin",adminRouter)
 app.use("/api/grades", gradeRouter);
-
+app.use("/api/enrollments", enrollmentRouter);
+app.use("/api/courses", courseRouter);
 
 AppDataSource.initialize()
   .then(async () => {

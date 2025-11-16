@@ -23,13 +23,16 @@ export class GradeService {
     const result = await this.gradeRepository.delete(id);
     return result.affected !== 0;
   }
-  async updateGrade(id: string, gradeData: Partial<Grade>): Promise<Grade | null> {
-    const grade = await this.gradeRepository.findOneBy({ id });
-    if (!grade) return null;
+  async updateGrade(records:any[]): Promise<void> {
+    const formatted = records.map(r => ({
+      ...r,
+      student: { id: r.studentId },
+      course: { id: r.courseId },
+      
+    }));
+    console.log(formatted);
+    await this.gradeRepository.save(formatted);
 
-    this.gradeRepository.merge(grade, gradeData);
-    await this.gradeRepository.save(grade);
-    return grade;
   }
   async findStudentGrades(courseId: string,studentId:string): Promise<Grade[]> {
     return await this.gradeRepository.find({

@@ -15,7 +15,7 @@ export class Attendance {
   @ManyToOne(() => Course, (course) => course.attendanceRecords, {
     onDelete: 'CASCADE',
   })
-  course: Course;
+  course: Promise<Course>;
 ;
 
   @Column({ type: 'date' })

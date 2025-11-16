@@ -17,7 +17,7 @@ import StudentPanel from "@/pages/StudentPanel";
 import CreateDepartmentPage from "@/pages/CreateDepartmentPage";
 import ManageDepartmentsPage from "@/pages/ManageDepartmentsPage"; 
 import AdminDashboard from "@/features/admin/Dashboard";
-import StudentDetailsPage from "../pages/StudentDetailsPage";
+import UserDetailsPage from "../pages/UserDetails";
 import { RoutePath } from "./routes";
 import CreateCoursePage from "@/pages/CreateCoursePage";
 import ManageCoursesPage from "@/pages/ManageCoursesPage";
@@ -25,7 +25,7 @@ import CreateEnrollmentPage from "@/pages/CreateEnrollmentPage";
 import ManageEnrollmentsPage from "@/pages/ManageEnrollmentsPage";
 import CreateTimetablePage from "@/pages/CreateTimetablePage";
 import ManageTimetablesPage from "@/pages/ManageTimetablesPage";
-
+import TeacherDashboard from "@/features/teacher/Dashboard";
 import StudentDashboard from "@/features/student/Dashboard";
 import TimetablePage from "@/features/student/TimeTablePage";
 import AttendancePage from "../features/student/AttendancePage";
@@ -42,7 +42,14 @@ const router = createBrowserRouter([
       {
         element: <TeacherOnly />,
         children: [
-          { path: "/teacher", element: <TeacherPanel /> },
+          { path: "/teacher", element: <TeacherPanel /> ,
+            children: [
+              {index:true, element:<Navigate to="dashboard" replace />},
+              {path:"dashboard", element:<TeacherDashboard />},
+            ]
+
+          },
+
         ],
       },
 
@@ -73,7 +80,7 @@ const router = createBrowserRouter([
               {path:"dashboard", element:<AdminDashboard />},
               { path: "users/create-user", element: <CreateUserPage /> },
               { path: "users/manage-users", element: <ManageUsersPage /> },
-              { path: "users/student/details", element: <StudentDetailsPage /> },
+              { path: "users/details", element: <UserDetailsPage /> },
               { path: "departments/create-department", element: <CreateDepartmentPage /> },
               { path: "departments/manage-departments", element: <ManageDepartmentsPage /> }, 
               { path: "courses/create-course", element: <CreateCoursePage /> },

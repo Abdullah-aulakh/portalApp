@@ -1,4 +1,5 @@
 import { Repository } from "typeorm";
+import { Attendance } from "../entity";
 
 export class AttendanceService {
   constructor(private readonly attendanceRepository: Repository<any>) {}
@@ -17,6 +18,11 @@ export class AttendanceService {
       where: { course: { id } },
     });
   }
+  async findStudentAttendanceRecords(studentId:string,courseId:string): Promise<any[]> {
+    return await this.attendanceRepository.find({
+      where: { student: { id: studentId }, course: { id: courseId } },
+    });
+  }
   async createAttendance(attendance: any): Promise<any> {
     const newAttendance = this.attendanceRepository.create(attendance);
     await this.attendanceRepository.save(newAttendance);
@@ -26,14 +32,7 @@ export class AttendanceService {
     const result = await this.attendanceRepository.delete(id);
     return result.affected !== 0;
   }
-  async updateAttendance(id: string, attendanceData: Partial<any>): Promise<any | null> {
-    const attendance = await this.attendanceRepository.findOneBy({ id });
-    if (!attendance) return null;
 
-    this.attendanceRepository.merge(attendance, attendanceData);
-    await this.attendanceRepository.save(attendance);
-    return attendance;
-  }
   async getStudentAttendancePercentage(studentId: string,courseId: string): Promise<{percentage:number,total:number,present:number}> {
     // total attendance records for the student
 
@@ -51,4 +50,17 @@ export class AttendanceService {
     // calculate percentage
     return {percentage:(present / total) * 100,total,present};
   }
+
+  async updateAttendance(records: any[]): Promise<void> {
+  const formatted = records.map(r => ({
+    id: r.id,
+    date: r.date,
+    isPresent: r.isPresent,
+    student: { id: r.studentId },
+    course: { id: r.courseId }
+  }));
+
+  await this.attendanceRepository.save(formatted);
+}
+
 }

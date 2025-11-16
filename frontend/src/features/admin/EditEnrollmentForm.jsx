@@ -3,43 +3,23 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import useAxios from "@/hooks/useAxios";
-import CustomInput from "@/components/CustomInput";
-import CustomButton from "@/components/CustomButton";
 import CustomDropDown from "@/components/CustomDropDown";
+import CustomButton from "@/components/CustomButton";
 import FullPageLoader from "@/components/FullPageLoader";
 
 const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
-  const [courses, setCourses] = useState([]);
-
-  const { response: coursesResponse, fetchData: fetchCourses } = useAxios();
   const { response, error, loading, fetchData: updateEnrollment } = useAxios();
-
-  // Fetch courses on component mount
-  useEffect(() => {
-    fetchCourses({ url: "/courses", method: "get" });
-  }, []);
-
-  useEffect(() => {
-    if (coursesResponse) {
-      setCourses(Array.isArray(coursesResponse) ? coursesResponse : []);
-    }
-  }, [coursesResponse]);
 
   useEffect(() => {
     if (response) {
       Swal.fire({
         title: "Success!",
-        text: "Enrollment updated successfully!",
+        text: "Enrollment status updated successfully!",
         icon: "success",
         confirmButtonColor: "var(--color-primary)",
       });
-      
-      const updatedEnrollment = {
-        ...enrollment,
-        ...response,
-        course: response.course || enrollment.course
-      };
-      
+
+      const updatedEnrollment = { ...enrollment, ...response };
       onSave(updatedEnrollment);
     }
   }, [response]);
@@ -56,27 +36,29 @@ const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
   }, [error]);
 
   const validationSchema = Yup.object({
-    courseId: Yup.string().required("Course is required"),
+    status: Yup.string().required("Status is required"),
   });
 
   const formik = useFormik({
     initialValues: {
-      courseId: enrollment?.course?.id || "",
+      status: enrollment?.status || "active",
     },
     validationSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      const payload = {
-        courseId: values.courseId,
-      };
-
       await updateEnrollment({
         url: `/enrollments/${enrollment.id}`,
         method: "put",
-        data: payload,
+        data: { status: values.status },
       });
     },
   });
+
+  const statusOptions = [
+    { value: "enrolled", label: "Enrolled" },
+    { value: "completed", label: "Completed" },
+    { value: "dropped", label: "Dropped" },
+  ];
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -87,77 +69,37 @@ const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
             Edit Enrollment
           </h2>
           <p className="text-white/80 text-center text-sm sm:text-base mt-1">
-            Update enrollment information
+            Update enrollment status
           </p>
         </div>
 
         {loading && <FullPageLoader />}
 
         <form onSubmit={formik.handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-          {/* Student Information (Read-only) */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
+        
+
+          {/* Current Status */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4">
             <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">
-              Student Information
+              Current Status
             </h3>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                {enrollment.student?.user?.firstName?.charAt(0)}
-                {enrollment.student?.user?.lastName?.charAt(0)}
-              </div>
-              <div>
-                <p className="text-gray-800 font-medium text-sm sm:text-base">
-                  {enrollment.student?.user?.firstName} {enrollment.student?.user?.lastName}
-                </p>
-                <p className="text-gray-600 text-xs sm:text-sm">
-                  {enrollment.student?.registrationNumber} • Semester {enrollment.student?.currentSemester}
-                </p>
-                <p className="text-gray-600 text-xs sm:text-sm">
-                  {enrollment.student?.program}
-                </p>
-              </div>
-            </div>
+            <p className="text-gray-800 font-medium text-sm sm:text-base">
+              {enrollment.status.charAt(0).toUpperCase() + enrollment.status.slice(1)}
+            </p>
           </div>
 
-          {/* Current Course Information */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
-            <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">
-              Current Course
-            </h3>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                📚
-              </div>
-              <div>
-                <p className="text-gray-800 font-medium text-sm sm:text-base">
-                  {enrollment.course?.code} - {enrollment.course?.title}
-                </p>
-                <p className="text-gray-600 text-xs sm:text-sm">
-                  {enrollment.course?.creditHours} credit hours
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Course Selection */}
+          {/* Status Dropdown */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Change Course
+              Change Status
             </label>
             <CustomDropDown
-              label="Select New Course"
-              options={[
-                { value: "", label: "Select a new course" },
-                ...courses
-                  .filter(course => course.id !== enrollment.course?.id)
-                  .map(course => ({
-                    value: course.id,
-                    label: `${course.code} - ${course.title} (${course.creditHours} credits)`
-                  }))
-              ]}
-              selectedOption={formik.values.courseId}
-              onChange={(value) => formik.setFieldValue("courseId", value)}
-              isInvalid={!!formik.errors.courseId && formik.touched.courseId}
-              validationMsg={formik.errors.courseId}
+              label="Select Status"
+              options={statusOptions}
+              selectedOption={formik.values.status}
+              onChange={(value) => formik.setFieldValue("status", value)}
+              isInvalid={!!formik.errors.status && formik.touched.status}
+              validationMsg={formik.errors.status}
             />
           </div>
 
@@ -183,9 +125,9 @@ const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
               type="submit"
               variant="primary"
               className="flex-1 order-1 sm:order-2"
-              disabled={loading || !formik.values.courseId}
+              disabled={loading || !formik.values.status}
             >
-              {loading ? "Updating..." : "Update Enrollment"}
+              {loading ? "Updating..." : "Update Status"}
             </CustomButton>
           </div>
         </form>

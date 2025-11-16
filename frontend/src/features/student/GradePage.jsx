@@ -3,7 +3,7 @@ import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import useAxios from "@/hooks/useAxios";
 import FullpageLoader from "@/components/FullPageLoader";
-import GradeTile from "@/features/student/GradeTile";
+import GradeTile from "@/components/GradeTile";
 import { useAuth } from "@/context/AuthContext";
 
 const GradesPage = () => {
@@ -44,6 +44,7 @@ const GradesPage = () => {
   // Update responses
   useEffect(() => {
     if (activeCourseApi.response) setActiveGrades(activeCourseApi.response);
+    console.log(activeCourseApi.response);
   }, [activeCourseApi.response]);
 
   useEffect(() => {

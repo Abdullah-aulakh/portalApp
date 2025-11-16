@@ -34,7 +34,10 @@ export class EnrollmentService {
   }
   async findByStudentId(id: string): Promise<Enrollment[]> {
     return await this.enrollmentRepository.find({
-        where: { student: { id } },
+        where: { student: { id }  },
+        relations:{
+          course:true
+        }
     })
   }
   async findExistingEnrollment(studentId: string, courseId: string): Promise<Enrollment | null> {

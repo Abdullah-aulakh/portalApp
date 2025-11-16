@@ -1,5 +1,6 @@
 import { Repository } from "typeorm";
 import { User } from "../entity/user.entity";
+import { UserRoles } from "../enum/user.roles";
 
 export class UserService {
     constructor(private readonly userRepository: Repository<User>) { }
@@ -41,5 +42,14 @@ export class UserService {
     this.userRepository.merge(user, userData);
     await this.userRepository.save(user);
     return user;
+  }
+  async findAdmins(): Promise<User[]> {
+    return await this.userRepository.find({
+      where: { role: UserRoles.ADMIN },
+      relations: {
+        admin: true,
+      }
+     
+    });
   }
 }

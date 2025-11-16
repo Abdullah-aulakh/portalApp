@@ -30,11 +30,6 @@ const TeacherPanel = () => {
       icon: FaCalendarAlt,
       path: "schedule",
     },
-    {
-      title: "Analytics",
-      icon: FaChartBar,
-      path: "analytics",
-    },
   ];
 
   return (

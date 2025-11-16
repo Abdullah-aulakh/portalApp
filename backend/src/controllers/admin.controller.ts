@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../helpers/catch-async.helper";
-import { studentRepository,teacherRepository,departmentRepository } from "../repository";
+import { studentRepository,teacherRepository,departmentRepository, userRepository } from "../repository";
 
 export class AdminController {
   
@@ -10,5 +10,11 @@ export class AdminController {
    const totalDepartments = await departmentRepository.getTotal();
    res.status(200).json({totalStudents,totalTeachers,totalDepartments });
 
+  });
+
+  static getAdmin = catchAsync(async (req: Request, res: Response) => {
+
+    const admins = await userRepository.findAdmins();
+    res.status(200).json(admins);
   });
 }

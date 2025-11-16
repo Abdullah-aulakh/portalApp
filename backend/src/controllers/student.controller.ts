@@ -111,7 +111,7 @@ export class StudentController {
           student.id,
           courseId
         );
-        const records = await attendanceRepository.findByCourse(courseId);
+        const records = await attendanceRepository.findStudentAttendanceRecords(student.id,courseId);
         return {
           ...course,
           attendancePercentage: percentage,

@@ -12,6 +12,7 @@ export class TeacherResponseDto {
     lastName: string;
     email: string;
     profilePicture?: string | null;
+    role: string | null;
   };
 
   department: {
@@ -31,6 +32,7 @@ export class TeacherResponseDto {
       lastName: teacher.user.lastName,
       email: teacher.user.email,
       profilePicture: teacher.user.profilePicture,
+      role: teacher.user.role,
     };
 
     this.department = {

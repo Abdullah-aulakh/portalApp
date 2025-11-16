@@ -57,34 +57,7 @@ const Dashboard = () => {
     <>
     {loading && <FullPageLoader />}
     <div className="p-8 bg-white/90 min-h rounded-3xl shadow-xl border-2 border-[var(--primary-color)]">
-      <Tabs>
-        {/* Tab headers */}
-        <TabList className="flex mb-6 justify-around space-x-4">
-          <Tab
-            className="px-4 py-2 font-medium cursor-pointer border-b-0 transition-all"
-            selectedClassName="border-b-3 border-[var(--color-primary)] text-[var(--color-primary)]"
-          >
-            Overview
-          </Tab>
-          <Tab
-            className="px-4 py-2 font-medium cursor-pointer border-b-0 transition-all"
-            selectedClassName="border-b-3 border-[var(--color-primary)] text-[var(--color-primary)]"
-          >
-            Users
-          </Tab>
-        </TabList>
-
-        {/* Tab content */}
-        <TabPanel>
-          <h2 className="text-xl font-bold mb-4">Overview</h2>
-          <DashboardCards stats={stats} />
-        </TabPanel>
-
-        <TabPanel>
-          <h2 className="text-xl font-bold mb-4">Users</h2>
-          <p>Here you can manage users.</p>
-        </TabPanel>
-      </Tabs>
+      <DashboardCards stats={stats} />
     </div>
     </>
   );

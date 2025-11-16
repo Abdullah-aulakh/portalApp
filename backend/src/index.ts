@@ -14,6 +14,7 @@ import { gradeRouter } from "./routes/grade.routes";
 import { adminRouter } from "./routes/admin.routes";
 import { enrollmentRouter } from "./routes/enrollment.routes";
 import {courseRouter} from "./routes/courses.routes";
+import {attendanceRouter} from "./routes/attendance.routes";
 
 
 const app = express();
@@ -45,6 +46,7 @@ app.use("/api/admin",adminRouter)
 app.use("/api/grades", gradeRouter);
 app.use("/api/enrollments", enrollmentRouter);
 app.use("/api/courses", courseRouter);
+app.use("/api/attendance", attendanceRouter);
 
 AppDataSource.initialize()
   .then(async () => {

@@ -7,6 +7,7 @@ import { timetableValidator } from "../validators/timetable.validator";
 const Router = express.Router();
 
 Router.get("/", authentication,authorization([UserRoles.ADMIN]),TimetableController.getAllTimetables);
+Router.get("/:id/courses", authentication,authorization([UserRoles.ADMIN]),TimetableController.getCourseTimetable);
 Router.post("/", authentication,authorization([UserRoles.ADMIN]), timetableValidator,TimetableController.createTimetable);
 Router.get("/:id", authentication,authorization([UserRoles.ADMIN]),TimetableController.getTimetableById);
 Router.delete("/:id", authentication,authorization([UserRoles.ADMIN]),TimetableController.deleteTimetableById);

@@ -43,6 +43,9 @@ export class DepartmentController {
       if(HOD) return res.status(400).json({ message: "Another deaprtement already has this teacher as head of department" });
       req.body.headOfDepartment = headOfDepartment;
     }
+    else{
+      req.body.headOfDepartment = null;
+    }
     const updatedDepartment = await departmentRepository.updateDepartment(req.params.id,req.body);
     res.status(200).json(updatedDepartment);
   });
@@ -66,5 +69,12 @@ export class DepartmentController {
     if (!department) return res.status(404).json({ message: "Department not found" });
     const students = await departmentRepository.findStudents(req.params.id);
     res.status(200).json(students.map(s => new StudentResponseDto(s)));
+  });
+
+  static getDepartmentCourses = catchAsync(async (req: Request, res: Response) => {
+    const department = await departmentRepository.findById(req.params.id);
+    if (!department) return res.status(404).json({ message: "Department not found" });
+    const courses = await departmentRepository.findCourses(department.id);
+    res.status(200).json(courses);
   });
 }

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { gradeRepository} from "../repository/index";
+import { gradeRepository,studentRepository,enrollmentRepository,courseRepository} from "../repository/index";
 import { catchAsync } from "../helpers/catch-async.helper";
 
 
@@ -25,17 +25,43 @@ export class GradeController {
     res.status(200).json({ message: "Grade deleted successfully" });
   });
 
-  static updateGradeById = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const grade = await gradeRepository.findById(id);
-    if (!grade) return res.status(404).json({ message: "Grade not found" });
 
-    const updatedGrade = await gradeRepository.updateGrade(id, req.body);
-    res.status(200).json(updatedGrade);
-  });
 
   static createGrade = catchAsync(async (req: Request, res: Response) => {
     const grade = await gradeRepository.createGrade(req.body);
     res.status(201).json(grade);
+  });
+
+  static getStudentGrades = catchAsync(async (req: Request, res: Response) => {
+    const {registrationNumber} = req.params;
+    const student = await studentRepository.findByRegistrationNumber(registrationNumber);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    const activeEnrollments = await enrollmentRepository.findActiveEnrollments(student.id);
+    const courseIds = activeEnrollments.map(enrollment => enrollment.course.id);
+
+    const gradeData = await Promise.all(
+      courseIds.map(async (courseId) => {
+        const course = await courseRepository.findById(courseId);
+        const grades = await gradeRepository.findStudentGrades(courseId,student.id);
+        return {
+          ...course,
+          grades
+        };
+      })
+    );
+    res.status(200).json({
+      student,
+      courses:gradeData
+    });
+  });
+
+  static updateGrades = catchAsync(async (req: Request, res: Response) => {
+    const records = req.body;
+    console.log(records);
+
+    await gradeRepository.updateGrade(records);
+
+   return res.status(200).json({ message: "Grade updated successfully" });
   });
 }

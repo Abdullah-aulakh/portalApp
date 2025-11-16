@@ -7,7 +7,13 @@ export class DepartmentService {
   constructor(private readonly departmentRepository: Repository<Department>) {}
 
   async find(): Promise<Department[]> {
-    return await this.departmentRepository.find();
+    return await this.departmentRepository.find({
+      relations:{
+        headOfDepartment:{
+          user:true,
+        }
+      }
+    });
   }
 
   async findById(id: string): Promise<Department | null> {

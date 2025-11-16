@@ -23,11 +23,14 @@ import CreateCoursePage from "@/pages/CreateCoursePage";
 import ManageCoursesPage from "@/pages/ManageCoursesPage";
 import CreateEnrollmentPage from "@/pages/CreateEnrollmentPage";
 import ManageEnrollmentsPage from "@/pages/ManageEnrollmentsPage";
+import CreateTimetablePage from "@/pages/CreateTimetablePage";
+import ManageTimetablesPage from "@/pages/ManageTimetablesPage";
 
 import StudentDashboard from "@/features/student/Dashboard";
 import TimetablePage from "@/features/student/TimeTablePage";
 import AttendancePage from "../features/student/AttendancePage";
-
+import ManageAttendancePage from "@/pages/ManageAttendancePage";
+import ManageGradesPage from "@/pages/ManageGradesPage"; 
 
 
 const router = createBrowserRouter([
@@ -76,6 +79,10 @@ const router = createBrowserRouter([
               { path: "courses/manage-courses", element: <ManageCoursesPage /> },
               { path: "enrollments/create-enrollment", element: <CreateEnrollmentPage /> },
               { path: "enrollments/manage-enrollments", element: <ManageEnrollmentsPage /> },
+              { path: "timetable/create-timetable", element: <CreateTimetablePage /> },
+              { path: "timetable/manage-timetable", element: <ManageTimetablesPage /> },
+              { path: "attendance/manage-attendance", element: <ManageAttendancePage /> },
+              { path: "grades/manage-grades", element: <ManageGradesPage /> },
             ]
           },
         ],

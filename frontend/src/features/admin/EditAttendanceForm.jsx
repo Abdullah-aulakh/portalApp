@@ -3,44 +3,28 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import useAxios from "@/hooks/useAxios";
-import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
 import CustomDropDown from "@/components/CustomDropDown";
 import FullPageLoader from "@/components/FullPageLoader";
 
-const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
-  const [courses, setCourses] = useState([]);
-
-  const { response: coursesResponse, fetchData: fetchCourses } = useAxios();
-  const { response, error, loading, fetchData: updateEnrollment } = useAxios();
-
-  // Fetch courses on component mount
-  useEffect(() => {
-    fetchCourses({ url: "/courses", method: "get" });
-  }, []);
-
-  useEffect(() => {
-    if (coursesResponse) {
-      setCourses(Array.isArray(coursesResponse) ? coursesResponse : []);
-    }
-  }, [coursesResponse]);
+const EditAttendanceForm = ({ attendance, onSave, onCancel }) => {
+  const { response, error, loading, fetchData: updateAttendance } = useAxios();
 
   useEffect(() => {
     if (response) {
       Swal.fire({
         title: "Success!",
-        text: "Enrollment updated successfully!",
+        text: "Attendance updated successfully!",
         icon: "success",
         confirmButtonColor: "var(--color-primary)",
       });
       
-      const updatedEnrollment = {
-        ...enrollment,
-        ...response,
-        course: response.course || enrollment.course
+      const updatedAttendance = {
+        ...attendance,
+        ...response
       };
       
-      onSave(updatedEnrollment);
+      onSave(updatedAttendance);
     }
   }, [response]);
 
@@ -48,7 +32,7 @@ const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
     if (error) {
       Swal.fire({
         title: "Error!",
-        text: error?.message || "Failed to update enrollment",
+        text: error?.message || "Failed to update attendance",
         icon: "error",
         confirmButtonColor: "var(--color-primary)",
       });
@@ -56,22 +40,22 @@ const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
   }, [error]);
 
   const validationSchema = Yup.object({
-    courseId: Yup.string().required("Course is required"),
+    isPresent: Yup.boolean().required("Attendance status is required"),
   });
 
   const formik = useFormik({
     initialValues: {
-      courseId: enrollment?.course?.id || "",
+      isPresent: attendance?.isPresent || false,
     },
     validationSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
       const payload = {
-        courseId: values.courseId,
+        isPresent: values.isPresent,
       };
 
-      await updateEnrollment({
-        url: `/enrollments/${enrollment.id}`,
+      await updateAttendance({
+        url: `/attendance/${attendance.id}`,
         method: "put",
         data: payload,
       });
@@ -84,88 +68,115 @@ const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
         {/* Header */}
         <div className="bg-[var(--color-primary)] text-white p-4 sm:p-6 rounded-t-xl sm:rounded-t-2xl">
           <h2 className="text-xl sm:text-2xl font-bold text-center">
-            Edit Enrollment
+            Edit Attendance
           </h2>
           <p className="text-white/80 text-center text-sm sm:text-base mt-1">
-            Update enrollment information
+            Update attendance status
           </p>
         </div>
 
         {loading && <FullPageLoader />}
 
         <form onSubmit={formik.handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-          {/* Student Information (Read-only) */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4">
+          {/* Student Information */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
             <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">
               Student Information
             </h3>
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                {enrollment.student?.user?.firstName?.charAt(0)}
-                {enrollment.student?.user?.lastName?.charAt(0)}
+                {attendance.student?.user?.firstName?.charAt(0)}
+                {attendance.student?.user?.lastName?.charAt(0)}
               </div>
               <div>
                 <p className="text-gray-800 font-medium text-sm sm:text-base">
-                  {enrollment.student?.user?.firstName} {enrollment.student?.user?.lastName}
+                  {attendance.student?.user?.firstName} {attendance.student?.user?.lastName}
                 </p>
                 <p className="text-gray-600 text-xs sm:text-sm">
-                  {enrollment.student?.registrationNumber} • Semester {enrollment.student?.currentSemester}
+                  {attendance.student?.registrationNumber}
                 </p>
                 <p className="text-gray-600 text-xs sm:text-sm">
-                  {enrollment.student?.program}
+                  {attendance.student?.program} • Semester {attendance.student?.currentSemester}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Current Course Information */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+          {/* Course Information */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4">
             <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">
-              Current Course
+              Course Information
             </h3>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                 📚
               </div>
               <div>
                 <p className="text-gray-800 font-medium text-sm sm:text-base">
-                  {enrollment.course?.code} - {enrollment.course?.title}
+                  {attendance.course?.code} - {attendance.course?.title}
                 </p>
                 <p className="text-gray-600 text-xs sm:text-sm">
-                  {enrollment.course?.creditHours} credit hours
+                  {attendance.course?.creditHours} credit hours
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Course Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Change Course
-            </label>
-            <CustomDropDown
-              label="Select New Course"
-              options={[
-                { value: "", label: "Select a new course" },
-                ...courses
-                  .filter(course => course.id !== enrollment.course?.id)
-                  .map(course => ({
-                    value: course.id,
-                    label: `${course.code} - ${course.title} (${course.creditHours} credits)`
-                  }))
-              ]}
-              selectedOption={formik.values.courseId}
-              onChange={(value) => formik.setFieldValue("courseId", value)}
-              isInvalid={!!formik.errors.courseId && formik.touched.courseId}
-              validationMsg={formik.errors.courseId}
-            />
+          {/* Date Information */}
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-4">
+            <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">
+              Date
+            </h3>
+            <p className="text-gray-800 text-sm sm:text-base">
+              {new Date(attendance.date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </p>
           </div>
 
-          {/* Enrollment Date */}
-          <div className="text-sm text-gray-600">
-            <p>
-              <strong>Enrollment Date:</strong> {new Date(enrollment.enrolledAt).toLocaleDateString()}
-            </p>
+          {/* Current Status */}
+          <div className={`border rounded-lg p-3 sm:p-4 ${
+            attendance.isPresent 
+              ? 'bg-green-50 border-green-200' 
+              : 'bg-red-50 border-red-200'
+          }`}>
+            <h3 className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">
+              Current Status
+            </h3>
+            <div className="flex items-center gap-2">
+              {attendance.isPresent ? (
+                <>
+                  <FaCheck className="text-green-500" />
+                  <span className="text-green-800 font-medium">Present</span>
+                </>
+              ) : (
+                <>
+                  <FaTimes className="text-red-500" />
+                  <span className="text-red-800 font-medium">Absent</span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Status Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Update Status
+            </label>
+            <CustomDropDown
+              label="Select Status"
+              options={[
+                { value: "true", label: "Present" },
+                { value: "false", label: "Absent" }
+              ]}
+              selectedOption={formik.values.isPresent.toString()}
+              onChange={(value) => formik.setFieldValue("isPresent", value === "true")}
+              isInvalid={!!formik.errors.isPresent && formik.touched.isPresent}
+              validationMsg={formik.errors.isPresent}
+            />
           </div>
 
           {/* Action Buttons */}
@@ -183,9 +194,9 @@ const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
               type="submit"
               variant="primary"
               className="flex-1 order-1 sm:order-2"
-              disabled={loading || !formik.values.courseId}
+              disabled={loading}
             >
-              {loading ? "Updating..." : "Update Enrollment"}
+              {loading ? "Updating..." : "Update Attendance"}
             </CustomButton>
           </div>
         </form>
@@ -194,4 +205,4 @@ const EditEnrollmentForm = ({ enrollment, onSave, onCancel }) => {
   );
 };
 
-export default EditEnrollmentForm;
+export default EditAttendanceForm;

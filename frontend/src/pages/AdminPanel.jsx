@@ -4,6 +4,10 @@ import { Outlet } from "react-router";
 import TopNavbar from "@/components/TopNavBar";
 import { FaBook } from "react-icons/fa";
 import { FaUserGraduate } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
+import { FaClipboardCheck } from "react-icons/fa";
+import { FaGraduationCap } from "react-icons/fa";
+
 
 
 const AdminPanel = () => {
@@ -44,7 +48,32 @@ const AdminPanel = () => {
       { title: "Create Enrollment", path: "enrollments/create-enrollment" },
       { title: "Manage Enrollments", path: "enrollments/manage-enrollments" }
     ],
+  },
+    {
+    title: "Timetable",
+    icon: FaCalendarAlt,
+    path: "timetable",
+    subMenu: [
+      { title: "Create Timetable", path: "timetable/create-timetable" },
+      { title: "Manage Timetable", path: "timetable/manage-timetable" }
+    ],
   },  
+    {
+    title: "Attendance",
+    icon: FaClipboardCheck,
+    path: "attendance",
+    subMenu: [
+      { title: "Manage Attendance", path: "attendance/manage-attendance" }
+    ],
+  },
+    {
+    title: "Grades",
+    icon: FaGraduationCap,
+    path: "grades",
+    subMenu: [
+      { title: "Manage Grades", path: "grades/manage-grades" } // ADD THIS
+    ],
+  },
   ];
 
   return (

@@ -3,37 +3,39 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import useAxios from "@/hooks/useAxios";
+import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
 import CustomDropDown from "@/components/CustomDropDown";
+import FullPageLoader from "@/components/FullPageLoader";
 
 const CreateEnrollmentForm = () => {
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState(null);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   const { response: studentsResponse, fetchData: fetchStudents } = useAxios();
   const { response: coursesResponse, fetchData: fetchCourses } = useAxios();
+  const { response: searchResponse, fetchData: searchStudent } = useAxios();
   const { response, error, loading, fetchData: createEnrollment } = useAxios();
 
-  // Fetch students and courses for dropdowns
+  // Fetch courses on component mount
   useEffect(() => {
-    fetchStudents({ url: "/students", method: "get" });
     fetchCourses({ url: "/courses", method: "get" });
   }, []);
-
-  useEffect(() => {
-    if (studentsResponse) {
-      const studentsData = Array.isArray(studentsResponse) ? studentsResponse : [];
-      setStudents(studentsData);
-      setFilteredStudents(studentsData);
-    }
-  }, [studentsResponse]);
 
   useEffect(() => {
     if (coursesResponse) {
       setCourses(Array.isArray(coursesResponse) ? coursesResponse : []);
     }
   }, [coursesResponse]);
+
+  useEffect(() => {
+    if (searchResponse) {
+      setSearchResults(searchResponse);
+    }
+  }, [searchResponse]);
 
   useEffect(() => {
     if (response) {
@@ -44,6 +46,9 @@ const CreateEnrollmentForm = () => {
         confirmButtonColor: "var(--color-primary)",
       });
       formik.resetForm();
+      setSelectedStudent(null);
+      setSearchQuery("");
+      setSearchResults(null);
     }
   }, [response]);
 
@@ -83,19 +88,25 @@ const CreateEnrollmentForm = () => {
     },
   });
 
-  const handleStudentSearch = (searchTerm) => {
-    if (!searchTerm) {
-      setFilteredStudents(students);
-      return;
-    }
+  const handleSearchStudent = async () => {
+    if (!searchQuery.trim()) return;
+    
+    await searchStudent({
+      url: `/students/reg/${searchQuery}`,
+      method: "get",
+    });
+  };
 
-    const filtered = students.filter(student =>
-      student.registrationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.user?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.user?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.program?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredStudents(filtered);
+  const handleSelectStudent = (student) => {
+    setSelectedStudent(student);
+    formik.setFieldValue("studentId", student.id);
+    setSearchResults(null);
+    setSearchQuery("");
+  };
+
+  const handleRemoveStudent = () => {
+    setSelectedStudent(null);
+    formik.setFieldValue("studentId", "");
   };
 
   const renderError = (field) =>
@@ -112,35 +123,117 @@ const CreateEnrollmentForm = () => {
         </p>
       </div>
 
+      {loading && <FullPageLoader />}
+
       <form onSubmit={formik.handleSubmit} className="space-y-4 sm:space-y-6">
-        {/* Student Selection */}
+        {/* Student Search Section */}
         <div className="space-y-3">
           <label className="block text-sm font-medium text-gray-700">
-            Select Student
+            Student
           </label>
-          
-          {/* Student Search */}
-          <input
-            type="text"
-            placeholder="Search students by name, registration number, or program..."
-            onChange={(e) => handleStudentSearch(e.target.value)}
-            className="w-full border-2 border-[var(--color-primary)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-          />
 
-          <CustomDropDown
-            label="Student"
-            options={[
-              { value: "", label: "Select a student" },
-              ...filteredStudents.map(student => ({
-                value: student.id,
-                label: `${student.registrationNumber} - ${student.user?.firstName} ${student.user?.lastName} (${student.program} - Sem ${student.currentSemester})`
-              }))
-            ]}
-            selectedOption={formik.values.studentId}
-            onChange={(value) => formik.setFieldValue("studentId", value)}
-            isInvalid={!!renderError("studentId")}
-            validationMsg={renderError("studentId")}
-          />
+          {selectedStudent ? (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                    {selectedStudent.user?.firstName?.charAt(0)}
+                    {selectedStudent.user?.lastName?.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-gray-800 font-medium text-sm sm:text-base">
+                      {selectedStudent.user?.firstName} {selectedStudent.user?.lastName}
+                    </p>
+                    <p className="text-gray-600 text-xs sm:text-sm">
+                      {selectedStudent.registrationNumber} • Semester {selectedStudent.currentSemester}
+                    </p>
+                    <p className="text-gray-600 text-xs sm:text-sm">
+                      {selectedStudent.program} • {selectedStudent.department?.name}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveStudent}
+                  className="text-red-600 hover:text-red-800 text-sm font-medium"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="Search by registration number..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 border-2 border-[var(--color-primary)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSearchStudent();
+                    }
+                  }}
+                />
+                <CustomButton
+                  type="button"
+                  onClick={handleSearchStudent}
+                  disabled={!searchQuery.trim()}
+                  size="sm"
+                  className="w-full sm:w-auto"
+                >
+                  Search
+                </CustomButton>
+              </div>
+
+              {searchResults && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium text-gray-700">Search Result:</p>
+                    <button
+                      type="button"
+                      onClick={() => setSearchResults(null)}
+                      className="text-gray-500 hover:text-gray-700 text-sm"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          {searchResults.user?.firstName?.charAt(0)}
+                          {searchResults.user?.lastName?.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-gray-800 font-medium text-sm">
+                            {searchResults.user?.firstName} {searchResults.user?.lastName}
+                          </p>
+                          <p className="text-gray-600 text-xs">
+                            {searchResults.registrationNumber} • Semester {searchResults.currentSemester}
+                          </p>
+                        </div>
+                      </div>
+                      <CustomButton
+                        type="button"
+                        onClick={() => handleSelectStudent(searchResults)}
+                        variant="primary"
+                        size="sm"
+                      >
+                        Select
+                      </CustomButton>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formik.errors.studentId && formik.touched.studentId && (
+                <p className="text-red-500 text-xs mt-1">{formik.errors.studentId}</p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Course Selection */}
@@ -149,12 +242,12 @@ const CreateEnrollmentForm = () => {
             Select Course
           </label>
           <CustomDropDown
-            label="Course"
+            label="Select Course"
             options={[
               { value: "", label: "Select a course" },
               ...courses.map(course => ({
                 value: course.id,
-                label: `${course.code} - ${course.title}`
+                label: `${course.code} - ${course.title} (${course.creditHours} credits)`
               }))
             ]}
             selectedOption={formik.values.courseId}
@@ -164,43 +257,12 @@ const CreateEnrollmentForm = () => {
           />
         </div>
 
-        {/* Selected Student and Course Preview */}
-        {(formik.values.studentId || formik.values.courseId) && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">Enrollment Preview</h4>
-            
-            {formik.values.studentId && (
-              <div className="mb-2">
-                <p className="text-sm text-blue-700">
-                  <strong>Student:</strong> {
-                    filteredStudents.find(s => s.id === formik.values.studentId)?.user?.firstName
-                  } {
-                    filteredStudents.find(s => s.id === formik.values.studentId)?.user?.lastName
-                  } ({filteredStudents.find(s => s.id === formik.values.studentId)?.registrationNumber})
-                </p>
-              </div>
-            )}
-            
-            {formik.values.courseId && (
-              <div>
-                <p className="text-sm text-blue-700">
-                  <strong>Course:</strong> {
-                    courses.find(c => c.id === formik.values.courseId)?.code
-                  } - {
-                    courses.find(c => c.id === formik.values.courseId)?.title
-                  }
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Submit Button */}
         <div className="flex justify-end pt-4">
           <CustomButton
             type="submit"
             variant="primary"
-            disabled={loading}
+            disabled={loading || !formik.values.studentId || !formik.values.courseId}
             className="w-full sm:w-auto"
           >
             {loading ? "Enrolling..." : "Create Enrollment"}

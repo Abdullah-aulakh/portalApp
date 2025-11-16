@@ -56,20 +56,33 @@ const ManageEnrollmentsPage = () => {
 
   const handleViewDetails = (enrollment) => {
     Swal.fire({
-      title: "Enrollment Details",
+      title: `Enrollment Details`,
       html: `
-        <div class="text-left">
-          <p><strong>Enrollment ID:</strong> ${enrollment.id}</p>
-          <p><strong>Student:</strong> ${enrollment.student?.user?.firstName} ${enrollment.student?.user?.lastName}</p>
-          <p><strong>Registration Number:</strong> ${enrollment.student?.registrationNumber}</p>
-          <p><strong>Program:</strong> ${enrollment.student?.program}</p>
-          <p><strong>Semester:</strong> ${enrollment.student?.currentSemester}</p>
-          <p><strong>Course:</strong> ${enrollment.course?.code} - ${enrollment.course?.title}</p>
-          <p><strong>Enrolled Date:</strong> ${new Date(enrollment.enrolledAt).toLocaleDateString()}</p>
+        <div class="text-left space-y-2">
+          <div class="border-b pb-2">
+            <p class="font-semibold text-gray-700">Student Information</p>
+            <p><strong>Name:</strong> ${enrollment.student?.user?.firstName} ${enrollment.student?.user?.lastName}</p>
+            <p><strong>Registration No:</strong> ${enrollment.student?.registrationNumber}</p>
+            <p><strong>Program:</strong> ${enrollment.student?.program}</p>
+            <p><strong>Semester:</strong> ${enrollment.student?.currentSemester}</p>
+            <p><strong>Department:</strong> ${enrollment.student?.department?.name}</p>
+          </div>
+          <div class="border-b pb-2">
+            <p class="font-semibold text-gray-700">Course Information</p>
+            <p><strong>Course Code:</strong> ${enrollment.course?.code}</p>
+            <p><strong>Course Title:</strong> ${enrollment.course?.title}</p>
+            <p><strong>Credit Hours:</strong> ${enrollment.course?.creditHours}</p>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-700">Enrollment Details</p>
+            <p><strong>Enrollment ID:</strong> ${enrollment.id}</p>
+            <p><strong>Enrolled Date:</strong> ${new Date(enrollment.enrolledAt).toLocaleDateString()}</p>
+          </div>
         </div>
       `,
       icon: "info",
       confirmButtonColor: "var(--color-primary)",
+      width: 500,
       customClass: {
         popup: 'text-sm sm:text-base',
         title: 'text-lg sm:text-xl'
@@ -84,12 +97,12 @@ const ManageEnrollmentsPage = () => {
   const handleDelete = async (enrollment) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: `Do you want to remove ${enrollment.student?.user?.firstName} ${enrollment.student?.user?.lastName} from ${enrollment.course?.code}?`,
+      text: `Do you want to delete enrollment for "${enrollment.student?.user?.firstName} ${enrollment.student?.user?.lastName}" in "${enrollment.course?.code}"?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "var(--color-primary)",
-      confirmButtonText: "Yes, remove enrollment!",
+      confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
       customClass: {
         popup: 'text-sm sm:text-base'
@@ -122,15 +135,15 @@ const ManageEnrollmentsPage = () => {
       }
 
       Swal.fire({
-        title: "Removed!",
-        text: `Student has been removed from the course successfully.`,
+        title: "Deleted!",
+        text: `Enrollment has been deleted successfully.`,
         icon: "success",
         confirmButtonColor: "var(--color-primary)",
       });
     } catch (deleteError) {
       Swal.fire({
         title: "Error!",
-        text: deleteError?.message || "Failed to remove enrollment",
+        text: deleteError?.message || "Failed to delete enrollment",
         icon: "error",
         confirmButtonColor: "var(--color-primary)",
       });
@@ -177,7 +190,7 @@ const ManageEnrollmentsPage = () => {
         <div className="text-center sm:text-left">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Manage Enrollments</h2>
           <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
-            View and manage student course enrollments
+            View and manage all student course enrollments
           </p>
         </div>
         <div className="flex justify-center sm:justify-end">
@@ -244,7 +257,7 @@ const ManageEnrollmentsPage = () => {
             <div className="space-y-4 sm:space-y-6">
               <SearchBar
                 endpoint="enrollments"
-                placeholder="Search by student name, registration number, or course code..."
+                placeholder="Search by enrollment ID..."
                 setResults={handleSearch}
               />
               
@@ -274,7 +287,7 @@ const ManageEnrollmentsPage = () => {
                 <div className="text-center py-6 sm:py-8">
                   <div className="text-gray-400 text-3xl sm:text-4xl mb-2 sm:mb-3">🔍</div>
                   <p className="text-gray-500 text-sm sm:text-base">
-                    Use the search bar above to find enrollments.
+                    Use the search bar above to find enrollments by ID.
                   </p>
                 </div>
               )}
@@ -299,7 +312,7 @@ const ManageEnrollmentsPage = () => {
           <div className="text-xl sm:text-2xl font-bold text-purple-600">
             {new Set(enrollments.map(e => e.course?.id)).size}
           </div>
-          <div className="text-xs sm:text-sm text-purple-800">Courses with Enrollments</div>
+          <div className="text-xs sm:text-sm text-purple-800">Unique Courses</div>
         </div>
       </div>
 

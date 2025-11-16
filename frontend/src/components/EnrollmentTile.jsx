@@ -12,7 +12,7 @@ const EnrollmentTile = ({ enrollment, onEdit, onDelete, onViewDetails }) => {
           </div>
           <div className="min-w-0 flex-1">
             <h3 className="text-lg sm:text-xl font-bold text-gray-800 truncate">
-              {enrollment.student?.user?.firstName} {enrollment.student?.user?.lastName}
+              {enrollment.student?.registrationNumber}
             </h3>
             <p className="text-gray-600 text-sm sm:text-base truncate">
               {enrollment.course?.code} - {enrollment.course?.title}
@@ -46,7 +46,7 @@ const EnrollmentTile = ({ enrollment, onEdit, onDelete, onViewDetails }) => {
         </div>
       </div>
 
-      {/* Student Details Section */}
+      {/* Student Information Section */}
       <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
@@ -55,36 +55,27 @@ const EnrollmentTile = ({ enrollment, onEdit, onDelete, onViewDetails }) => {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-gray-800 font-medium text-sm sm:text-base truncate">
-              {enrollment.student?.registrationNumber}
+              {enrollment.student?.user?.firstName} {enrollment.student?.user?.lastName}
             </p>
             <p className="text-gray-600 text-xs sm:text-sm truncate">
-              {enrollment.student?.program} - Semester {enrollment.student?.currentSemester}
+              Semester {enrollment.student?.currentSemester} • {enrollment.student?.program}
             </p>
           </div>
         </div>
 
-        {/* Course Details */}
-        <div className="flex items-center gap-3">
-          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0">
-            <FaBook size={12} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-gray-800 font-medium text-sm sm:text-base truncate">
-              {enrollment.course?.code}
-            </p>
-            <p className="text-gray-600 text-xs sm:text-sm truncate">
-              {enrollment.course?.title}
-            </p>
-          </div>
+        {/* Course Information */}
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <FaBook className="text-indigo-500 flex-shrink-0" />
+          <span className="truncate">{enrollment.course?.title}</span>
         </div>
       </div>
 
       {/* Enrollment Date */}
-      <div className="flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2">
-        <span className="flex items-center gap-1">
-          <FaCalendar className="text-indigo-500" />
-          Enrolled Date:
-        </span>
+      <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+        <div className="flex items-center gap-2">
+          <FaCalendar className="text-green-500" />
+          <span>Enrolled:</span>
+        </div>
         <span className="font-medium">
           {new Date(enrollment.enrolledAt).toLocaleDateString()}
         </span>

@@ -1,120 +1,99 @@
-import React from "react";
-import { FaUserGraduate, FaCalendar, FaCheck, FaTimes, FaEdit, FaTrash } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-const AttendanceTile = ({ attendance, onEdit, onDelete, onViewDetails }) => {
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
+const AttendanceTile = ({ attendanceData }) => {
+  const [collapsed, setCollapsed] = useState(true);
+  console.log(attendanceData);
 
-  const getStatusColor = (isPresent) => {
-    return isPresent ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-  };
-
-  const getStatusIcon = (isPresent) => {
-    return isPresent ? <FaCheck className="text-green-500" /> : <FaTimes className="text-red-500" />;
+  // Determine progress bar color
+  const getColor = (percent) => {
+    if (percent >= 75) return "bg-green-500";
+    if (percent >= 50) return "bg-yellow-400";
+    return "bg-red-500";
   };
 
   return (
-    <div className="bg-white/90 shadow-lg rounded-xl p-4 sm:p-6 border-2 border-[var(--color-primary)] hover:shadow-xl transition-all duration-300 hover:scale-[1.02] w-full">
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="p-2 sm:p-3 bg-blue-100 rounded-full flex-shrink-0">
-            <FaUserGraduate className="text-blue-600 text-lg sm:text-xl" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-800 truncate">
-              {attendance.student?.registrationNumber}
-            </h3>
-            <p className="text-gray-600 text-sm sm:text-base truncate">
-              {attendance.course?.code} - {attendance.course?.title}
-            </p>
-          </div>
+    <div className="bg-white shadow-lg rounded-xl border-2 border-(--color-primary) mb-4">
+      {/* Header */}
+      <div
+        className="flex justify-between items-center p-4 cursor-pointer"
+        onClick={() => setCollapsed(!collapsed)}
+      >
+        <span className="font-semibold text-gray-800">
+          {attendanceData.title}
+        </span>
+
+        {/* Progress Bar */}
+        <div className="flex-1 mx-4 bg-gray-200 h-4 rounded-full overflow-hidden">
+          <div
+            className={`${getColor(attendanceData.attendancePercentage)} h-4`}
+            style={{ width: `${attendanceData.attendancePercentage}%` }}
+          ></div>
         </div>
-        
-        {/* Action Buttons */}
-        <div className="flex gap-1 sm:gap-2 justify-center sm:justify-start">
-          <button
-            onClick={() => onViewDetails && onViewDetails(attendance)}
-            className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors flex-shrink-0"
-            title="View Details"
-          >
-            <FaCalendar size={16} className="sm:w-4 sm:h-4" />
-          </button>
-          <button
-            onClick={() => onEdit && onEdit(attendance)}
-            className="p-1.5 sm:p-2 text-green-600 hover:bg-green-100 rounded-full transition-colors flex-shrink-0"
-            title="Edit Attendance"
-          >
-            <FaEdit size={16} className="sm:w-4 sm:h-4" />
-          </button>
-          <button
-            onClick={() => onDelete && onDelete(attendance)}
-            className="p-1.5 sm:p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors flex-shrink-0"
-            title="Delete Attendance"
-          >
-            <FaTrash size={16} className="sm:w-4 sm:h-4" />
-          </button>
+
+        {/* Percentage + Collapse Icon */}
+        <div className="flex items-center ml-4 gap-2">
+          <span className="font-medium text-gray-700">
+            {attendanceData.attendancePercentage}%
+          </span>
+          {collapsed ? (
+            <FaChevronDown className="text-gray-500" />
+          ) : (
+            <FaChevronUp className="text-gray-500" />
+          )}
         </div>
       </div>
 
-      {/* Student Information Section */}
-      <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-            {attendance.student?.user?.firstName?.charAt(0)}
-            {attendance.student?.user?.lastName?.charAt(0)}
+      {/* Collapsible Content */}
+      {!collapsed && (
+        <div className="p-4 border-t border-gray-200">
+          {/* Summary */}
+          <div className="flex justify-between mb-4">
+            <div>
+              <p className="text-gray-600 text-sm">Classes Conducted</p>
+              <p className="font-semibold">{attendanceData.totalClasses}</p>
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Classes Attended</p>
+              <p className="font-semibold">{attendanceData.attendedClasses}</p>
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Attendance %</p>
+              <p className="font-semibold">
+                {attendanceData.attendancePercentage}%
+              </p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-gray-800 font-medium text-sm sm:text-base truncate">
-              {attendance.student?.user?.firstName} {attendance.student?.user?.lastName}
-            </p>
-            <p className="text-gray-600 text-xs sm:text-sm truncate">
-              {attendance.student?.program} • Semester {attendance.student?.currentSemester}
-            </p>
+
+          {/* Records Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left text-gray-600 border">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="px-3 py-2 border">Sr #</th>
+                  <th className="px-3 py-2 border">Date</th>
+                  <th className="px-3 py-2 border">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {attendanceData.records.map((rec, idx) => (
+                  <tr key={rec.id} className="hover:bg-gray-50">
+                    <td className="px-3 py-2 border">{idx + 1}</td>
+                    <td className="px-3 py-2 border">{rec.date}</td>
+                    <td
+                      className={`px-3 py-2 border font-semibold ${
+                        rec.isPresent ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {rec.isPresent ? "Present" : "Absent"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-
-        {/* Course Information */}
-        <div className="text-sm text-gray-600">
-          <p className="truncate">{attendance.course?.title}</p>
-        </div>
-      </div>
-
-      {/* Attendance Details */}
-      <div className="space-y-2 mb-3">
-        {/* Date */}
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-gray-700">Date</span>
-          <div className="flex items-center gap-2 text-gray-600">
-            <FaCalendar className="text-purple-500" />
-            <span>{formatDate(attendance.date)}</span>
-          </div>
-        </div>
-
-        {/* Status */}
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-gray-700">Status</span>
-          <div className="flex items-center gap-2">
-            {getStatusIcon(attendance.isPresent)}
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(attendance.isPresent)}`}>
-              {attendance.isPresent ? 'Present' : 'Absent'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Attendance ID */}
-      <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-200">
-        <p className="text-xs text-gray-500 text-center truncate">
-          ID: {attendance.id?.substring(0, 8)}...
-        </p>
-      </div>
+      )}
     </div>
   );
 };

@@ -11,6 +11,7 @@ import { Enrollment } from './enrollment.entity';
 import { Timetable } from './timetable.entity'
 import { Grade } from './grade.entity';
 import { Attendance } from './attendance.entity';
+import { Department } from './department.entity';
 
 @Entity('courses')
 export class Course {
@@ -30,6 +31,12 @@ export class Course {
     onDelete: 'SET NULL',
   })
   teacher: Teacher;
+
+  @ManyToOne(() => Department, (department) => department.courses, {
+  onDelete: 'SET NULL',
+})
+department: Department;
+
 
   @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
   enrollments: Enrollment[];

@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
-import { studentRepository,enrollmentRepository, attendanceRepository, timetableRepository,courseRepository} from "../repository/index";
+import e, { Request, Response } from "express";
+import { studentRepository,enrollmentRepository, attendanceRepository, timetableRepository,courseRepository,gradeRepository} from "../repository/index";
 import { catchAsync } from "../helpers/catch-async.helper";
 import { StudentResponseDto } from "../dto/response/student.response.dto";
 import { getDay } from "../helpers/date-time.helper";
+
 
 export class StudentController {
   
@@ -39,7 +40,6 @@ export class StudentController {
     const { registrationNumber } = req.params;
     const student = await studentRepository.findByRegistrationNumber(registrationNumber);
     if (!student) return res.status(404).json({ message: "Student not found" });
-    console.log(student);
     res.status(200).json(new StudentResponseDto(student));
   });
 
@@ -123,4 +123,36 @@ export class StudentController {
     );
     res.status(200).json(attendanceData);
   });
+
+  static getStudentGradeData = catchAsync(async (req: Request, res: Response) => {
+  
+    const {id} = req.params;
+    const active =req.query?.enrolled;
+
+    const student = await studentRepository.getStudentByUserId(id);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    let enrollments=[];
+    if(active){
+    enrollments = await enrollmentRepository.findActiveEnrollments(student.id);
+    }
+    else{
+    enrollments = await enrollmentRepository.findPreviousEnrollments(student.id);
+    }
+    const courseIds = enrollments.map(enrollment => enrollment.course.id);
+      console.log(courseIds)
+    const gradeData = await Promise.all(
+      courseIds.map(async (courseId) => {
+        const course = await courseRepository.findById(courseId);
+        const grades = await gradeRepository.findStudentGrades(courseId,student.id);
+        return {
+          ...course,
+          grades
+        };
+      })
+    );
+    res.status(200).json(gradeData);
+  }
+
+  );
 }

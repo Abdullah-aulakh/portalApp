@@ -18,7 +18,6 @@ const StudentPanel = () => {
       icon: FaBook,
       path: "academics",
       subMenu: [
-        { title: "My Courses", path: "academics/courses" },
         { title: "My Grades", path: "academics/grades" },
         { title: "Enrollments", path: "academics/enrollments" },
       ],

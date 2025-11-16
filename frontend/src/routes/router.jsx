@@ -31,7 +31,7 @@ import TimetablePage from "@/features/student/TimeTablePage";
 import AttendancePage from "../features/student/AttendancePage";
 import ManageAttendancePage from "@/pages/ManageAttendancePage";
 import ManageGradesPage from "@/pages/ManageGradesPage"; 
-
+import GradePage from "@/features/student/GradePage";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +55,7 @@ const router = createBrowserRouter([
               {path:"dashboard", element:<StudentDashboard />},
               {path:"timetable", element:<TimetablePage />},
               {path:"attendance", element:<AttendancePage />},
+              {path:"academics/grades",element:<GradePage/>}
             ]
            },
 

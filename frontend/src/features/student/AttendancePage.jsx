@@ -15,6 +15,7 @@ const AttendancePage = () => {
 
   useEffect(() => {
     if (response) setAttendanceList(response);
+    console.log(response);
   }, [response]);
 
   return (
@@ -22,9 +23,9 @@ const AttendancePage = () => {
       {loading && <FullpageLoader />}
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Attendance</h1>
 
-      {attendanceList.length > 0 ? (
-        attendanceList.map((attendance) => (
-          <AttendanceTile key={attendance.courseId} attendanceData={attendance} />
+      {attendanceList?.length > 0 ? (
+        attendanceList?.map((attendance) => (
+          <AttendanceTile key={attendance?.courseId} attendanceData={attendance} />
         ))
       ) : (
         <p className="text-gray-500">No attendance data available.</p>

@@ -36,7 +36,7 @@ export class AttendanceService {
   }
   async getStudentAttendancePercentage(studentId: string,courseId: string): Promise<{percentage:number,total:number,present:number}> {
     // total attendance records for the student
-    console.log(courseId);
+
     const total = await this.attendanceRepository.count({
       where: { student: { id: studentId }, course: { id: courseId } },
     });

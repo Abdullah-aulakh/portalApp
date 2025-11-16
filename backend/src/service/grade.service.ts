@@ -31,4 +31,12 @@ export class GradeService {
     await this.gradeRepository.save(grade);
     return grade;
   }
+  async findStudentGrades(courseId: string,studentId:string): Promise<Grade[]> {
+    return await this.gradeRepository.find({
+      where:{
+        student:{id:studentId},
+        course:{id:courseId}
+      }
+    });
+  }
 }

@@ -2,11 +2,12 @@ import React from "react";
 import { useAuth } from "@/context/AuthContext";
 import { FaGraduationCap } from "react-icons/fa";
 import { FaRegCircleUser } from "react-icons/fa6";
+import { capitalizeFirst } from "../utils/helperFunctions";
 const TopNavbar = () => {
   const { user } = useAuth(); // { firstName, role, avatarUrl }
 
   return (
-    <nav className="bg-[var(--color-primary)] p-4 flex items-center justify-between rounded-3xl mx-4 my-2 shadow-lg">
+    <nav className="bg-(--color-primary) p-4 flex items-center justify-between rounded-3xl mx-4 my-2 shadow-lg">
       {/* Left: Logo */}
       <div className="flex items-center">
        <FaGraduationCap size={40} color="white"/>
@@ -26,7 +27,7 @@ const TopNavbar = () => {
         )}
         <div className="flex flex-col ">
           <span className="text-sm font-medium text-white">{user?.firstName}</span>
-          <span className="text-xs text-white/70">{user?.role}</span>
+          <span className="text-xs text-white/70">{capitalizeFirst(user?.role)}</span>
         </div>
        
       </div>

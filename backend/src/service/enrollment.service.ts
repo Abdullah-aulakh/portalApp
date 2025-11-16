@@ -54,4 +54,16 @@ export class EnrollmentService {
       }
     });
   }
+  async findPreviousEnrollments(studentId: string): Promise<Enrollment[]> {
+    return await this.enrollmentRepository.find({
+      where: { student: { id: studentId }, status: EnrollmentStatus.COMPLETED },
+      relations:{
+        course:{
+          teacher:{
+            user:true
+          }
+        }
+      }
+    });
+  }
 }

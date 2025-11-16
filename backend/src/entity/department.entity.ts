@@ -22,7 +22,7 @@ export class Department {
   @Column({ nullable: true })
   building: string;
 
-  @OneToOne(() => Teacher, { nullable: true })
+  @OneToOne(() => Teacher, { nullable: true ,onDelete:'SET NULL'})
   @JoinColumn()
   headOfDepartment: Teacher;
 

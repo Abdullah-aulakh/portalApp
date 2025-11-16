@@ -31,7 +31,7 @@ export class EnrollmentController {
     if (!enrollment) return res.status(404).json({ message: "Enrollment not found" });
 
     const updatedEnrollment = await enrollmentRepository.updateEnrollment(id, req.body);
-    res.status(200).json(new EnrollmentResponseDto(updatedEnrollment));
+    res.status(200).json(updatedEnrollment);
   });
 
   static createEnrollment = catchAsync(async (req: Request, res: Response) => {
@@ -46,5 +46,18 @@ export class EnrollmentController {
     req.body.student = student;
     const enrollment = await enrollmentRepository.createEnrollment(req.body);
     res.status(201).json(new EnrollmentResponseDto(enrollment));
+  });
+
+  static getStudentEnrollments = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const student = await studentRepository.findByRegistrationNumber(id);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    const enrollments = await enrollmentRepository.findByStudentId(student.id);
+
+    res.status(200).json({
+      student,
+      enrollments,
+    });
   });
 }

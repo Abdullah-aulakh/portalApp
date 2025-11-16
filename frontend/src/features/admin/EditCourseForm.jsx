@@ -11,12 +11,13 @@ import FullPageLoader from "@/components/FullPageLoader";
 const EditCourseForm = ({ course, onSave, onCancel }) => {
   const [teachers, setTeachers] = useState([]);
 
+  console.log("course", course);
   const { response: teachersResponse, fetchData: fetchTeachers } = useAxios();
   const { response, error, loading, fetchData: updateCourse } = useAxios();
 
   // Fetch teachers for dropdown
   useEffect(() => {
-    fetchTeachers({ url: "/teachers", method: "get" });
+    fetchTeachers({ url: `/departments/teachers/${course?.department?.id}`, method: "get" });
   }, []);
 
   useEffect(() => {

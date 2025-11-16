@@ -1,9 +1,10 @@
 import React from "react";
-import { FaBook, FaChalkboardTeacher, FaEdit, FaTrash, FaClock } from "react-icons/fa";
+import { FaBook, FaEdit, FaTrash, FaClock } from "react-icons/fa";
 
-const CourseTile = ({ course, onEdit, onDelete, onViewDetails }) => {
+const CourseTile = ({ course, onEdit, onDelete }) => {
   return (
     <div className="bg-white/90 shadow-lg rounded-xl p-4 sm:p-6 border-2 border-[var(--color-primary)] hover:shadow-xl transition-all duration-300 hover:scale-[1.02] w-full">
+      
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -14,21 +15,15 @@ const CourseTile = ({ course, onEdit, onDelete, onViewDetails }) => {
             <h3 className="text-lg sm:text-xl font-bold text-gray-800 truncate">
               {course.code}
             </h3>
-            <p className="text-gray-600 text-sm sm:text-base truncate">
+            <p className="text-gray-600 text-sm sm:text-base truncate mb-2">
               {course.title}
             </p>
+
           </div>
         </div>
-        
+
         {/* Action Buttons */}
         <div className="flex gap-1 sm:gap-2 justify-center sm:justify-start">
-          <button
-            onClick={() => onViewDetails && onViewDetails(course)}
-            className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors flex-shrink-0"
-            title="View Details"
-          >
-            <FaChalkboardTeacher size={16} className="sm:w-4 sm:h-4" />
-          </button>
           <button
             onClick={() => onEdit && onEdit(course)}
             className="p-1.5 sm:p-2 text-green-600 hover:bg-green-100 rounded-full transition-colors flex-shrink-0"
@@ -57,7 +52,7 @@ const CourseTile = ({ course, onEdit, onDelete, onViewDetails }) => {
             {course.creditHours}
           </span>
         </div>
-        
+
         {/* Teacher Information */}
         {course.teacher && (
           <div className="mt-2 flex items-center gap-2">
@@ -77,30 +72,13 @@ const CourseTile = ({ course, onEdit, onDelete, onViewDetails }) => {
         )}
       </div>
 
-      {/* Statistics Section */}
-      <div className="grid grid-cols-2 gap-2 sm:gap-4">
-        <div className="text-center p-2 sm:p-3 bg-blue-50 rounded-lg">
-          <FaChalkboardTeacher className="text-blue-600 mx-auto mb-1 text-sm sm:text-base" />
-          <p className="text-lg sm:text-2xl font-bold text-blue-700">
-            {course.enrollments?.length || 0}
-          </p>
-          <p className="text-xs text-gray-600">Enrollments</p>
-        </div>
-        
-        <div className="text-center p-2 sm:p-3 bg-green-50 rounded-lg">
-          <FaBook className="text-green-600 mx-auto mb-1 text-sm sm:text-base" />
-          <p className="text-lg sm:text-2xl font-bold text-green-700">
-            {course.grades?.length || 0}
-          </p>
-          <p className="text-xs text-gray-600">Grades</p>
-        </div>
-      </div>
-
-      {/* Course ID */}
-      <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-200">
-        <p className="text-xs text-gray-500 text-center truncate">
-          ID: {course.id?.substring(0, 8)}...
+      {/* Statistics Section: Only Enrollments */}
+      <div className="text-center p-2 sm:p-3 bg-blue-50 rounded-lg">
+        <FaBook className="text-blue-600 mx-auto mb-1 text-sm sm:text-base" />
+        <p className="text-lg sm:text-2xl font-bold text-blue-700">
+          {course.enrollments?.length || 0}
         </p>
+        <p className="text-xs text-gray-600">Enrollments</p>
       </div>
     </div>
   );

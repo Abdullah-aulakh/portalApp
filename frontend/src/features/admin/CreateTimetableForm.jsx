@@ -108,14 +108,7 @@ const CreateTimetableForm = () => {
 
   return (
     <div className="max-w-xl mx-auto p-5 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-[var(--primary-color)]">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-          Create Timetable Entry
-        </h2>
-        <p className="text-gray-600 mt-2 text-sm sm:text-base">
-          Schedule a course in the timetable
-        </p>
-      </div>
+     
 
       {loading && <FullPageLoader />}
 
@@ -126,9 +119,8 @@ const CreateTimetableForm = () => {
             Course
           </label>
           <CustomDropDown
-            label="Select Course"
+            label="Course"
             options={[
-              { value: "", label: "Select a course" },
               ...courses.map(course => ({
                 value: course.id,
                 label: `${course.code} - ${course.title} (${course.creditHours} credits)`
@@ -147,9 +139,9 @@ const CreateTimetableForm = () => {
             Day of Week
           </label>
           <CustomDropDown
-            label="Select Day"
+            label="Day"
             options={[
-              { value: "", label: "Select day" },
+
               ...daysOfWeek.map(day => ({
                 value: day,
                 label: day
@@ -172,7 +164,7 @@ const CreateTimetableForm = () => {
             <CustomDropDown
               label="Start Time"
               options={[
-                { value: "", label: "Select start time" },
+
                 ...timeSlots.map(time => ({
                   value: time,
                   label: time
@@ -193,7 +185,7 @@ const CreateTimetableForm = () => {
             <CustomDropDown
               label="End Time"
               options={[
-                { value: "", label: "Select end time" },
+
                 ...timeSlots.map(time => ({
                   value: time,
                   label: time

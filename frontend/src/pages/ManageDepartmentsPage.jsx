@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import DepartmentTile from "@/components/DepartmentTile";
 import SearchBar from "@/components/SearchBar";
 import EditDepartmentForm from "@/features/admin/EditDepartmentForm";
 import FullPageLoader from "@/components/FullPageLoader";
-import CustomButton from "@/components/CustomButton";
 import useAxios from "@/hooks/useAxios";
 import Swal from "sweetalert2";
 
 const ManageDepartmentsPage = () => {
   const [departments, setDepartments] = useState([]);
-  const [filteredDepartments, setFilteredDepartments] = useState([]);
   const [searchResults, setSearchResults] = useState(null);
-  const [activeTab, setActiveTab] = useState(0);
   const [editingDepartment, setEditingDepartment] = useState(null);
 
   const { response, error, loading, fetchData } = useAxios();
 
-  // Fetch all departments on component mount
+  // Fetch all departments on mount
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -26,9 +22,7 @@ const ManageDepartmentsPage = () => {
     if (response) {
       if (Array.isArray(response)) {
         setDepartments(response);
-        setFilteredDepartments(response);
       } else if (response.id) {
-        // Single department from search
         setSearchResults(response);
       }
     }
@@ -51,33 +45,6 @@ const ManageDepartmentsPage = () => {
 
   const handleSearch = (results) => {
     setSearchResults(results);
-    setActiveTab(1);
-  };
-
-  const handleViewDetails = (department) => {
-    Swal.fire({
-      title: `${department.name} - Full Details`,
-      html: `
-        <div class="text-left">
-          <p><strong>Department ID:</strong> ${department.id}</p>
-          <p><strong>Name:</strong> ${department.name}</p>
-          <p><strong>Building:</strong> ${department.building || "Not specified"}</p>
-          <p><strong>Head of Department:</strong> ${
-            department.headOfDepartment 
-              ? `${department.headOfDepartment.user?.firstName} ${department.headOfDepartment.user?.lastName} (${department.headOfDepartment.designation})`
-              : "Not assigned"
-          }</p>
-          <p><strong>Total Teachers:</strong> ${department.teachers?.length || 0}</p>
-          <p><strong>Total Students:</strong> ${department.students?.length || 0}</p>
-        </div>
-      `,
-      icon: "info",
-      confirmButtonColor: "var(--color-primary)",
-      customClass: {
-        popup: 'text-sm sm:text-base',
-        title: 'text-lg sm:text-xl'
-      }
-    });
   };
 
   const handleEdit = (department) => {
@@ -87,36 +54,19 @@ const ManageDepartmentsPage = () => {
   const handleDelete = async (department) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: `Do you want to delete "${department.name}"? This action cannot be undone and will remove all associated data.`,
+      text: `Do you want to delete "${department.name}"? This action cannot be undone.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "var(--color-primary)",
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
-      customClass: {
-        popup: 'text-sm sm:text-base'
-      }
     });
 
     if (result.isConfirmed) {
-      await deleteDepartment(department);
-    }
-  };
-
-  const deleteDepartment = async (department) => {
-    try {
-      const deleteResponse = await fetchData({
-        url: `/departments/${department.id}`,
-        method: "delete",
-      });
-
-      if (deleteResponse) {
-        // IMMEDIATELY update the UI without waiting for refresh
+      try {
+        await fetchData({ url: `/departments/${department.id}`, method: "delete" });
         setDepartments(prev => prev.filter(dept => dept.id !== department.id));
-        setFilteredDepartments(prev => prev.filter(dept => dept.id !== department.id));
-        
-        // Also update search results if needed
         if (searchResults) {
           if (Array.isArray(searchResults)) {
             setSearchResults(prev => prev.filter(dept => dept.id !== department.id));
@@ -124,46 +74,32 @@ const ManageDepartmentsPage = () => {
             setSearchResults(null);
           }
         }
-
         Swal.fire({
           title: "Deleted!",
           text: `"${department.name}" has been deleted successfully.`,
           icon: "success",
           confirmButtonColor: "var(--color-primary)",
         });
+      } catch (deleteError) {
+        Swal.fire({
+          title: "Error!",
+          text: deleteError?.message || "Failed to delete department",
+          icon: "error",
+          confirmButtonColor: "var(--color-primary)",
+        });
       }
-    } catch (deleteError) {
-      Swal.fire({
-        title: "Error!",
-        text: deleteError?.message || "Failed to delete department",
-        icon: "error",
-        confirmButtonColor: "var(--color-primary)",
-      });
     }
   };
 
   const handleEditSave = (updatedDepartment) => {
-    console.log("Updated department:", updatedDepartment);
-    
-    // Update the department in the local state IMMEDIATELY
-    setDepartments(prev => 
-      prev.map(dept => dept.id === updatedDepartment.id ? updatedDepartment : dept)
-    );
-    setFilteredDepartments(prev => 
-      prev.map(dept => dept.id === updatedDepartment.id ? updatedDepartment : dept)
-    );
-    
-    // Also update search results
+    setDepartments(prev => prev.map(dept => dept.id === updatedDepartment.id ? updatedDepartment : dept));
     if (searchResults) {
       if (Array.isArray(searchResults)) {
-        setSearchResults(prev => 
-          prev.map(dept => dept.id === updatedDepartment.id ? updatedDepartment : dept)
-        );
+        setSearchResults(prev => prev.map(dept => dept.id === updatedDepartment.id ? updatedDepartment : dept));
       } else if (searchResults.id === updatedDepartment.id) {
         setSearchResults(updatedDepartment);
       }
     }
-    
     setEditingDepartment(null);
   };
 
@@ -171,11 +107,11 @@ const ManageDepartmentsPage = () => {
     setEditingDepartment(null);
   };
 
-  const handleRefresh = () => {
-    fetchDepartments();
-    setSearchResults(null);
-    setActiveTab(0);
-  };
+  const displayedDepartments = searchResults
+    ? Array.isArray(searchResults)
+      ? searchResults
+      : [searchResults]
+    : departments;
 
   return (
     <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6">
@@ -187,108 +123,34 @@ const ManageDepartmentsPage = () => {
             View and manage all academic departments
           </p>
         </div>
-        <div className="flex justify-center sm:justify-end">
-          <CustomButton 
-            onClick={handleRefresh}
-            variant="primary"
-            disabled={loading}
-            size="sm"
-            className="w-full sm:w-auto"
-          >
-            Refresh
-          </CustomButton>
-        </div>
       </div>
 
+     
       {loading && <FullPageLoader />}
 
-      <div className="bg-white/90 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-xl border-2 border-[var(--color-primary)] p-4 sm:p-6">
-        <Tabs selectedIndex={activeTab} onSelect={setActiveTab}>
-          <TabList className="flex flex-col sm:flex-row mb-4 sm:mb-6 gap-2 sm:gap-4 border-b border-gray-200">
-            <Tab
-              className="px-4 py-2 sm:px-6 sm:py-3 font-medium cursor-pointer border-b-2 border-transparent transition-all hover:text-[var(--color-primary)] text-center text-sm sm:text-base"
-              selectedClassName="border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"
-            >
-              All Departments ({departments.length})
-            </Tab>
-            <Tab
-              className="px-4 py-2 sm:px-6 sm:py-3 font-medium cursor-pointer border-b-2 border-transparent transition-all hover:text-[var(--color-primary)] text-center text-sm sm:text-base"
-              selectedClassName="border-b-2 border-[var(--color-primary)] text-[var(--color-primary)]"
-            >
-              Search Department
-            </Tab>
-          </TabList>
-
-          {/* Tab 1: All Departments */}
-          <TabPanel>
-            {filteredDepartments.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-                {filteredDepartments.map((department) => (
-                  <DepartmentTile
-                    key={department.id}
-                    department={department}
-                    onViewDetails={handleViewDetails}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 sm:py-12">
-                <div className="text-gray-400 text-4xl sm:text-6xl mb-3 sm:mb-4">🏢</div>
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">
-                  No Departments Found
-                </h3>
-                <p className="text-gray-500 text-sm sm:text-base">
-                  There are no departments in the system yet.
-                </p>
-              </div>
-            )}
-          </TabPanel>
-
-          {/* Tab 2: Search Department */}
-          <TabPanel>
-            <div className="space-y-4 sm:space-y-6">
-              <SearchBar
-                endpoint="departments"
-                placeholder="Search by department name or ID..."
-                setResults={handleSearch}
-              />
-              
-              {searchResults ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-                  {Array.isArray(searchResults) ? (
-                    searchResults.map((department) => (
-                      <DepartmentTile
-                        key={department.id}
-                        department={department}
-                        onViewDetails={handleViewDetails}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                      />
-                    ))
-                  ) : (
-                    <DepartmentTile
-                      key={searchResults.id}
-                      department={searchResults}
-                      onViewDetails={handleViewDetails}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-6 sm:py-8">
-                  <div className="text-gray-400 text-3xl sm:text-4xl mb-2 sm:mb-3">🔍</div>
-                  <p className="text-gray-500 text-sm sm:text-base">
-                    Use the search bar above to find departments by name or ID.
-                  </p>
-                </div>
-              )}
-            </div>
-          </TabPanel>
-        </Tabs>
-      </div>
+      {/* Departments Grid */}
+      {displayedDepartments.length > 0 ? (
+        <div className="grid grid-cols-2 gap-6">
+          {displayedDepartments.map(department => (
+            <DepartmentTile
+              key={department.id}
+              department={department}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8 sm:py-12">
+          <div className="text-gray-400 text-4xl sm:text-6xl mb-3 sm:mb-4">🏢</div>
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">
+            No Departments Found
+          </h3>
+          <p className="text-gray-500 text-sm sm:text-base">
+            There are no departments in the system yet.
+          </p>
+        </div>
+      )}
 
       {/* Statistics Footer */}
       <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">

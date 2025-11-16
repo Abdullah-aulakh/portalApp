@@ -1,5 +1,5 @@
 import e, { Request, Response } from "express";
-import { courseRepository, teacherRepository } from "../repository";
+import { courseRepository, teacherRepository,departmentRepository } from "../repository";
 
 import { catchAsync } from "../helpers/catch-async.helper";
 import { CourseResponseDto } from "../dto/response/course.response.dto";
@@ -25,15 +25,28 @@ export class CourseController {
         return res.status(404).json({ message: "Teacher not found" });
       req.body.teacher = teacher;
     }
+    const department = await departmentRepository.findById(req.body.departmentId);
+    if (!department)
+      return res.status(404).json({ message: "Department not found" });
+    req.body.department = department;
     const course = await courseRepository.createCourse(req.body);
-    res.status(201).json(new CourseResponseDto(course));
+    res.status(201).json(course);
   });
   static updateCourse = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     const course = await courseRepository.findById(id);
     if (!course) return res.status(404).json({ message: "Course not found" });
+    if(req.body.teacherId){
+      const teacher = await teacherRepository.findById(req.body.teacherId);
+      if (!teacher)
+        return res.status(404).json({ message: "Teacher not found" });
+      req.body.teacher = teacher;
+    }
+    else{
+      req.body.teacher = null;
+    }
     const updatedCourse = await courseRepository.updateCourse(id, req.body);
-    res.status(200).json(new CourseResponseDto(updatedCourse));
+    res.status(200).json(updatedCourse);
   });
   static deleteCourse = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;

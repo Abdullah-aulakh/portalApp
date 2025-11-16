@@ -24,13 +24,7 @@ const DepartmentTile = ({ department, onEdit, onDelete, onViewDetails }) => {
         
         {/* Action Buttons */}
         <div className="flex gap-1 sm:gap-2 justify-center sm:justify-start">
-          <button
-            onClick={() => onViewDetails && onViewDetails(department)}
-            className="p-1.5 sm:p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors flex-shrink-0"
-            title="View Details"
-          >
-            <FaUserTie size={16} className="sm:w-4 sm:h-4" />
-          </button>
+         
           <button
             onClick={() => onEdit && onEdit(department)}
             className="p-1.5 sm:p-2 text-green-600 hover:bg-green-100 rounded-full transition-colors flex-shrink-0"
@@ -93,12 +87,7 @@ const DepartmentTile = ({ department, onEdit, onDelete, onViewDetails }) => {
         </div>
       </div>
 
-      {/* Last Updated */}
-      <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-gray-200">
-        <p className="text-xs text-gray-500 text-center truncate">
-          ID: {department.id?.substring(0, 8)}...
-        </p>
-      </div>
+      
     </div>
   );
 };

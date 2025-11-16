@@ -8,15 +8,77 @@ import CustomButton from "@/components/CustomButton";
 import CustomDropDown from "@/components/CustomDropDown";
 
 const CreateCourseForm = () => {
+  const [departments, setDepartments] = useState([]);
   const [teachers, setTeachers] = useState([]);
 
+  const { response: deptResponse, fetchData: fetchDepartments } = useAxios();
   const { response: teachersResponse, fetchData: fetchTeachers } = useAxios();
   const { response, error, loading, fetchData: createCourse } = useAxios();
 
-  // Fetch teachers for dropdown
+   const validationSchema = Yup.object({
+    code: Yup.string()
+      .required("Course code is required")
+      .min(2, "Course code must be at least 2 characters")
+      .max(10, "Course code must be at most 10 characters"),
+    title: Yup.string()
+      .required("Course title is required")
+      .min(3, "Course title must be at least 3 characters")
+      .max(100, "Course title must be at most 100 characters"),
+    creditHours: Yup.number()
+      .required("Credit hours are required")
+      .min(1, "Minimum 1 credit hour")
+      .max(6, "Maximum 6 credit hours"),
+    departmentId: Yup.string().required("Department is required"),
+    teacherId: Yup.string().nullable(),
+  });
+  const formik = useFormik({
+    initialValues: {
+      code: "",
+      title: "",
+      creditHours: 3,
+      departmentId: "",
+      teacherId: "",
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      const payload = {
+        code: values.code,
+        title: values.title,
+        creditHours: values.creditHours,
+        departmentId: values.departmentId,
+        ...(values.teacherId && { teacherId: values.teacherId }),
+      };
+
+      await createCourse({
+        url: "/courses",
+        method: "post",
+        data: payload,
+      });
+    },
+  });
+
+  // Fetch departments on mount
   useEffect(() => {
-    fetchTeachers({ url: "/teachers", method: "get" });
+    fetchDepartments({ url: "/departments", method: "get" });
   }, []);
+
+  useEffect(() => {
+    if (deptResponse) {
+      setDepartments(Array.isArray(deptResponse) ? deptResponse : []);
+    }
+  }, [deptResponse]);
+
+  // Fetch teachers whenever a department is selected
+  useEffect(() => {
+    if (formik.values.departmentId) {
+      fetchTeachers({
+        url: `/departments/teachers/${formik.values.departmentId}`,
+        method: "get",
+      });
+    } else {
+      setTeachers([]);
+    }
+  }, [formik.values.departmentId]);
 
   useEffect(() => {
     if (teachersResponse) {
@@ -33,6 +95,7 @@ const CreateCourseForm = () => {
         confirmButtonColor: "var(--color-primary)",
       });
       formik.resetForm();
+      setTeachers([]);
     }
   }, [response]);
 
@@ -47,61 +110,42 @@ const CreateCourseForm = () => {
     }
   }, [error]);
 
-  const validationSchema = Yup.object({
-    code: Yup.string()
-      .required("Course code is required")
-      .min(2, "Course code must be at least 2 characters")
-      .max(10, "Course code must be at most 10 characters"),
-    title: Yup.string()
-      .required("Course title is required")
-      .min(3, "Course title must be at least 3 characters")
-      .max(100, "Course title must be at most 100 characters"),
-    creditHours: Yup.number()
-      .required("Credit hours are required")
-      .min(1, "Minimum 1 credit hour")
-      .max(6, "Maximum 6 credit hours"),
-    teacherId: Yup.string().nullable(),
-  });
+ 
 
-  const formik = useFormik({
-    initialValues: {
-      code: "",
-      title: "",
-      creditHours: 3,
-      teacherId: "",
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      const payload = {
-        code: values.code,
-        title: values.title,
-        creditHours: values.creditHours,
-        ...(values.teacherId && { teacherId: values.teacherId }),
-      };
-
-      await createCourse({
-        url: "/courses",
-        method: "post",
-        data: payload,
-      });
-    },
-  });
+  
 
   const renderError = (field) =>
     formik.touched[field] && formik.errors[field] ? formik.errors[field] : "";
 
   return (
     <div className="max-w-xl mx-auto p-5 bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-[var(--primary-color)]">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-          Create New Course
-        </h2>
-        <p className="text-gray-600 mt-2 text-sm sm:text-base">
-          Add a new course to the system
-        </p>
-      </div>
+     
 
       <form onSubmit={formik.handleSubmit} className="space-y-4 sm:space-y-6">
+        {/* Department */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Department
+          </label>
+          <CustomDropDown
+            label="Select Department"
+            options={[
+
+              ...departments.map((dept) => ({
+                value: dept.id,
+                label: dept.name,
+              })),
+            ]}
+            selectedOption={formik.values.departmentId}
+            onChange={(value) => {
+              formik.setFieldValue("departmentId", value);
+              formik.setFieldValue("teacherId", ""); // reset teacher
+            }}
+            isInvalid={!!renderError("departmentId")}
+            validationMsg={renderError("departmentId")}
+          />
+        </div>
+
         {/* Course Code */}
         <CustomInput
           label="Course Code"
@@ -139,9 +183,9 @@ const CreateCourseForm = () => {
                 : "border-[var(--color-primary)] focus:ring-[var(--color-primary)]"
             }`}
           >
-            {[1, 2, 3, 4, 5, 6].map(hours => (
+            {[1, 2, 3, 4, 5, 6].map((hours) => (
               <option key={hours} value={hours}>
-                {hours} Credit Hour{hours > 1 ? 's' : ''}
+                {hours} Credit Hour{hours > 1 ? "s" : ""}
               </option>
             ))}
           </select>
@@ -159,15 +203,16 @@ const CreateCourseForm = () => {
             label="Select Teacher"
             options={[
               { value: "", label: "No teacher assigned" },
-              ...teachers.map(teacher => ({
+              ...teachers.map((teacher) => ({
                 value: teacher.id,
-                label: `${teacher.user?.firstName} ${teacher.user?.lastName} - ${teacher.designation}`
-              }))
+                label: `${teacher.user?.firstName} ${teacher.user?.lastName} - ${teacher.designation}`,
+              })),
             ]}
             selectedOption={formik.values.teacherId}
             onChange={(value) => formik.setFieldValue("teacherId", value)}
             isInvalid={!!renderError("teacherId")}
             validationMsg={renderError("teacherId")}
+            disabled={!formik.values.departmentId}
           />
         </div>
 

@@ -9,17 +9,11 @@ const StudentPanel = () => {
   const menuData = [
     { title: "Dashboard", icon: FaHome, path: "dashboard" },
     {
-      title: "Profile",
-      icon: FaUser,
-      path: "profile",
-    },
-    {
       title: "Academics",
       icon: FaBook,
       path: "academics",
       subMenu: [
         { title: "My Grades", path: "academics/grades" },
-        { title: "Enrollments", path: "academics/enrollments" },
       ],
     },
     {

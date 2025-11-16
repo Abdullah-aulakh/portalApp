@@ -9,6 +9,7 @@ import {TimetableService} from "./timetable.service";
 import { CourseService } from "./course.service";
 import { EnrollmentService } from "./enrollment.service";
 import { AttendanceService } from "./attendance.service";
+import { AdminService } from "./admin.service";
 
 export {
   DepartmentService,
@@ -22,4 +23,5 @@ export {
   CourseService,
   EnrollmentService,
   AttendanceService,
+  AdminService
 };

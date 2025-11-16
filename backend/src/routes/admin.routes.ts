@@ -9,5 +9,6 @@ import { UserRoles } from '../enum/user.roles';
 const adminRouter = Router();
 
 adminRouter.get('/dashboard', authentication,authorization([UserRoles.ADMIN]),AdminController.getDashboard);
+adminRouter.get('/', authentication,authorization([UserRoles.ADMIN]),AdminController.getAdmin);
 
 export { adminRouter };

@@ -6,6 +6,8 @@ import {
   enrollmentRepository,
 } from "../repository";
 import { catchAsync } from "../helpers/catch-async.helper";
+import { v4 as uuid } from "uuid";
+
 
 export class AttendanceController {
   static getStudentAttendanceData = catchAsync(async (req: Request, res: Response) => {
@@ -56,23 +58,36 @@ export class AttendanceController {
 
   static updateAttendance = catchAsync(async (req: Request, res: Response) => {
 
-    const records = req.body;
-    console.log(records);
+     let records = req.body;
 
+  // Assign IDs to new records
+  records = records.map((r: { id: any; }) => ({
+    ...r,
+    id: r.id || uuid()   
+  }));
     await attendanceRepository.updateAttendance(records);
 
     const updatedRecords = await attendanceRepository.findStudentAttendanceRecords(req.body[0].studentId,req.body[0].courseId);
-    const course = await updatedRecords[0].course;
     const {percentage,total,present} = await attendanceRepository.getStudentAttendancePercentage(req.body[0].studentId,req.body[0].courseId);
     res.status(200).json({
        records:updatedRecords,
        totalClasses:total,
        attendedClasses:present,
        attendancePercentage:percentage,
-       id:course.id,
+       id:uuid(),
 
 
      });
+  });
+  static getTodaysAttendance = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const course = await courseRepository.findById(id);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const attendanceData = await attendanceRepository.findTodaysAttendance(course.id);
+    
+    console.log(attendanceData);
+    res.status(200).json(attendanceData);
   });
 }
 

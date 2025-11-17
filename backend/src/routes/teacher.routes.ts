@@ -7,6 +7,9 @@ import { TeacherController } from "../controllers/teacher.controller";
 const Router = express.Router();
 
 Router.get("/", authentication,authorization([UserRoles.ADMIN]),TeacherController.getAllTeachers);
+Router.get("/getProfile/:id", authentication,TeacherController.getTeacherProfile);
+Router.get("/getSchedule/:id", authentication,authorization([UserRoles.TEACHER]),TeacherController.getTeacherSchedule);
+Router.get("/getCourses/:id", authentication,authorization([UserRoles.TEACHER]),TeacherController.getTeacherCourses);
 Router.get("/:id", authentication,authorization([UserRoles.ADMIN]),TeacherController.getTeacherById);
 Router.delete("/:id", authentication,authorization([UserRoles.ADMIN]),TeacherController.deleteTeacherById);
 Router.put("/:id", authentication,authorization([UserRoles.ADMIN]),TeacherController.updateTeacherById);

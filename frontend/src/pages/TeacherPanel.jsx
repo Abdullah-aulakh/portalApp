@@ -1,29 +1,22 @@
 import CustomSidebar from "@/components/CustomSideBar";
 import { FaHome, FaChalkboardTeacher,FaChartBar, FaUsers, FaCalendarAlt } from "react-icons/fa";
 import { Outlet } from "react-router";
+import { MdEventAvailable } from "react-icons/md";
 import TopNavbar from "@/components/TopNavBar";
 
 const TeacherPanel = () => {
   const menuData = [
     { title: "Dashboard", icon: FaHome, path: "dashboard" },
     {
-      title: "Teaching",
-      icon: FaChalkboardTeacher,
-      path: "teaching",
-      subMenu: [
-        { title: "My Courses", path: "teaching/courses" },
-        { title: "Manage Grades", path: "teaching/grades" },
-        { title: "Attendance", path: "teaching/attendance" },
-      ],
-    },
-    {
-      title: "Students",
-      icon: FaUsers,
-      path: "students",
-      subMenu: [
-        { title: "Class Students", path: "students/class" },
-        { title: "Student Performance", path: "students/performance" },
-      ],
+     title:"Grades",
+     icon:FaChartBar,
+     path:"grades",
+    }
+
+    ,{
+      title:"Attendance",
+      icon:MdEventAvailable,
+      path:"attendance",
     },
     {
       title: "Schedule",

@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import useAxios from "@/hooks/useAxios";
 import FullPageLoader from "@/components/FullPageLoader";
 
-// Reusable Tailwind UI components
+// UI Components
 const Card = ({ children, className = "" }) => (
   <div className={`bg-white border-2 rounded-2xl shadow-sm border-(--color-primary) ${className}`}>
     {children}
@@ -34,12 +34,14 @@ export default function TeacherDashboard() {
 
   useEffect(() => {
     if (response) setTeacher(response);
+    console.log(response);
   }, [response]);
 
   return (
     <div className="w-full p-6 flex flex-col gap-6">
       {loading && <FullPageLoader />}
 
+      {/* Top Profile Card */}
       <Card className="p-6 flex items-center gap-6 shadow-md rounded-2xl">
         <Avatar
           src={
@@ -54,8 +56,22 @@ export default function TeacherDashboard() {
           <h1 className="text-2xl font-semibold">
             {user?.firstName} {user?.lastName}
           </h1>
-          <p className="text-gray-600 text-sm">Teacher ID: {teacher?.teacherId}</p>
-          <p className="text-gray-600 text-sm">Department: {teacher?.department}</p>
+
+          <p className="text-gray-600 text-sm">
+            Designation: {teacher?.designation}
+          </p>
+
+          <p className="text-gray-600 text-sm">
+            Position: {teacher?.position}
+          </p>
+
+          <p className="text-gray-600 text-sm">
+            Qualification: {teacher?.qualification}
+          </p>
+
+          <p className="text-gray-600 text-sm">
+            Experience: {teacher?.experienceYears} years
+          </p>
         </div>
       </Card>
 
@@ -69,7 +85,7 @@ export default function TeacherDashboard() {
             className="flex justify-between p-3 bg-white border-2 rounded-2xl shadow-sm border-(--color-primary) items-center"
           >
             <span className="font-medium text-gray-800">
-              {cls.course?.title} — {cls.room}
+              Room: {cls.room ? cls.room : "Not Assigned"}
             </span>
 
             <span className="font-medium text-gray-700">
@@ -88,10 +104,11 @@ export default function TeacherDashboard() {
             <CardContent className="p-5 flex flex-col gap-2">
               <h3 className="text-lg font-semibold">{c.title}</h3>
               <p className="text-sm text-gray-600">{c.code}</p>
-              <p className="text-sm text-gray-600">Credit Hours: {c.creditHours}</p>
-
-              <p className="text-sm font-semibold mt-1">
-                Enrolled Students: {c.totalStudents}
+              <p className="text-sm text-gray-600">
+                Credit Hours: {c.creditHours}
+              </p>
+              <p className="text-sm text-gray-600">
+                Department: {c.department?.name}
               </p>
             </CardContent>
           </Card>

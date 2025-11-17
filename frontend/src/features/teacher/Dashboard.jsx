@@ -80,13 +80,15 @@ export default function TeacherDashboard() {
 
       <ul className="space-y-2">
         {teacher?.todaysClasses?.map((cls) => (
+
           <li
             key={cls.id}
             className="flex justify-between p-3 bg-white border-2 rounded-2xl shadow-sm border-(--color-primary) items-center"
           >
-            <span className="font-medium text-gray-800">
-              Room: {cls.room ? cls.room : "Not Assigned"}
+            <span lassName="font-medium text-gray-800">
+              {cls?.course?.title+" ("+cls?.room+") "}
             </span>
+           
 
             <span className="font-medium text-gray-700">
               {cls.startTime} - {cls.endTime}

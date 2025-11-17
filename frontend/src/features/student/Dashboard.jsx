@@ -63,7 +63,7 @@ export default function Dashboard() {
             Registration: {student?.registrationNumber}
           </p>
           <p className="text-gray-600 text-sm">Program: {student.program}</p>
-          <p className="text-lg font-semibold mt-1">CGPA: {student.cgpa}</p>
+         
         </div>
       </Card>
 
@@ -80,7 +80,7 @@ export default function Dashboard() {
                   className="flex justify-between p-3 bg-white border-2 rounded-2xl shadow-sm border-(--color-primary) items-center"
                 >
                   <span className="font-medium text-gray-800">
-                    {enrollment.course?.title+" ("+cls.room+") "}
+                    {enrollment.course?.title+" ("+cls?.room+") "}
                   </span>
                   <div className="flex flex-col gap-2">
                     <span className="font-medium text-gray-700">
@@ -114,7 +114,7 @@ export default function Dashboard() {
                 Credit Hours: {e?.course?.creditHours}
               </p>
               <p className="text-sm font-semibold mt-1">
-                Attendance: {e?.attendancePercentage + "%"}
+                Attendance: {e?.attendancePercentage.toFixed(2) + "%"}
               </p>
             </CardContent>
           </Card>

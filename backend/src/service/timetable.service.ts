@@ -41,6 +41,9 @@ export class TimetableService {
   async findByCourse(id: string): Promise<Timetable[]> {
     return await this.timetableRepository.find({
       where: { course:{id} },
+      relations:{
+        course:true
+      }
     });
   }
 }

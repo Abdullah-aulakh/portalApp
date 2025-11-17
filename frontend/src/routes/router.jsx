@@ -8,7 +8,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import AdminOnly from "./AdminOnly";
 import TeacherOnly from "./TeacherOnly";
 import StudentOnly from "./StudentOnly";
-
+import TeacherSchedule from "@/features/teacher/Schedule";
 import AdminPanel from "@/pages/AdminPanel";
 import CreateUserPage from "@/pages/CreateUserPage";
 import ManageUsersPage from "@/pages/ManageUsersPage";
@@ -18,6 +18,7 @@ import CreateDepartmentPage from "@/pages/CreateDepartmentPage";
 import ManageDepartmentsPage from "@/pages/ManageDepartmentsPage"; 
 import AdminDashboard from "@/features/admin/Dashboard";
 import UserDetailsPage from "../pages/UserDetails";
+import CreateGradePage from "@features/teacher/CreateGrade";
 import { RoutePath } from "./routes";
 import CreateCoursePage from "@/pages/CreateCoursePage";
 import ManageCoursesPage from "@/pages/ManageCoursesPage";
@@ -32,7 +33,8 @@ import AttendancePage from "../features/student/AttendancePage";
 import ManageAttendancePage from "@/pages/ManageAttendancePage";
 import ManageGradesPage from "@/pages/ManageGradesPage"; 
 import GradePage from "@/features/student/GradePage";
-
+import CoursesAttendance from "@/features/teacher/CoursesAttendance";
+import CreateAttendancePage from "@/features/teacher/CreateAttendance";
 const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
@@ -46,6 +48,10 @@ const router = createBrowserRouter([
             children: [
               {index:true, element:<Navigate to="dashboard" replace />},
               {path:"dashboard", element:<TeacherDashboard />},
+              {path:"schedule", element:<TeacherSchedule />},
+              {path:"grades", element:<CreateGradePage />},
+              {path:"attendance", element:<CoursesAttendance />},
+              {path:"register/attendance/", element:<CreateAttendancePage />},
             ]
 
           },

@@ -1,6 +1,7 @@
 import { Repository } from "typeorm";
 import { Enrollment } from "../entity/enrollment.entity";
 import { EnrollmentStatus } from "../enum/enrollment.status";
+import { Student } from "../entity/student.entity";
 
 export class EnrollmentService {
   constructor(private readonly enrollmentRepository: Repository<Enrollment>) {}
@@ -68,5 +69,16 @@ export class EnrollmentService {
         }
       }
     });
+  }
+  async findStudents(courseId: string): Promise<Student[]> {
+    const enrollments = await this.enrollmentRepository.find({
+      where: { course: { id: courseId } },
+      relations: {
+        student: {
+          user: true,
+        },
+      },
+    });
+    return enrollments.map((e) => e.student);
   }
 }

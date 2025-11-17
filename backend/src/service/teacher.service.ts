@@ -1,5 +1,6 @@
 import { Repository } from "typeorm";
 import { Teacher } from "../entity/teacher.entity";
+import { Course } from "../entity/course.entity";
 
 export class TeacherService {
     constructor(private readonly teacherRepository: Repository<Teacher>) { }
@@ -39,4 +40,33 @@ export class TeacherService {
     async getTotal(): Promise<number> {
         return await this.teacherRepository.count();
     }
+    async findCourses(id: string): Promise<Course[]> {
+      const teacher = await this.teacherRepository.findOne({
+        where: { id },
+        relations: {
+          courses:{
+            department:true,
+            timetable:true,
+          
+          }
+        }
+      });
+     
+      return teacher?.courses ?? [];
+    }
+    async findByUserId(id: string): Promise<Teacher | null> {
+      return await this.teacherRepository.findOne({
+        where: { user: { id } },
+        relations: {
+          courses:{
+            enrollments:true,
+            department:true,
+            teacher:{
+              user:true
+            }
+          }
+        }
+      });
+    }
+
 }

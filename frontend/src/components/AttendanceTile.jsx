@@ -89,7 +89,7 @@ const AttendanceTile = ({ attendanceData, onSave,editable,s }) => {
         {/* Percentage + Icon */}
         <div className="flex items-center ml-4 gap-2">
           <span className="font-medium text-gray-700">
-            {attendanceData.attendancePercentage}%
+            {attendanceData.attendancePercentage.toFixed(2)}%
           </span>
           {collapsed ? (
             <FaChevronDown className="text-gray-500" />

@@ -1,5 +1,6 @@
 import { Repository } from "typeorm";
 import { Attendance } from "../entity";
+import { relative } from "path";
 
 export class AttendanceService {
   constructor(private readonly attendanceRepository: Repository<any>) {}
@@ -59,8 +60,30 @@ export class AttendanceService {
     student: { id: r.studentId },
     course: { id: r.courseId }
   }));
+  console.log(formatted);
 
   await this.attendanceRepository.save(formatted);
+}
+
+async findTodaysAttendance(courseId: string): Promise<any[]> {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
+  const dd = String(today.getDate()).padStart(2, '0');
+  const formattedToday = `${yyyy}-${mm}-${dd}`; // "2025-11-17"
+
+  console.log(formattedToday);
+  return await this.attendanceRepository.find({
+    where: {
+      course: { id: courseId },
+      date: formattedToday,
+      
+    },
+    relations:{
+      student:true,
+      course:true
+    }
+  });
 }
 
 }

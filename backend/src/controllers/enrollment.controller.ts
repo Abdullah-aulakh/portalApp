@@ -60,4 +60,14 @@ export class EnrollmentController {
       enrollments,
     });
   });
+
+  static getStudentsofCourse = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const course = await courseRepository.findById(id);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const students = await enrollmentRepository.findStudents(course.id);
+
+    res.status(200).json(students);
+  });
 }

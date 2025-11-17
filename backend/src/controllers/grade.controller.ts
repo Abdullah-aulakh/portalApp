@@ -28,6 +28,12 @@ export class GradeController {
 
 
   static createGrade = catchAsync(async (req: Request, res: Response) => {
+    const student = await studentRepository.findById(req.body.studentId);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    req.body.student = student;
+    const course = await courseRepository.findById(req.body.courseId);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+    req.body.course = course;
     const grade = await gradeRepository.createGrade(req.body);
     res.status(201).json(grade);
   });
